@@ -7,6 +7,7 @@ const execute = require("./execute");
 const addMeta = require("./addMeta");
 const { color } = require("./fonts");
 const { getConfig } = require("./getConfig");
+const fsp = require('fs').promises;
 
 // Configuration object for storing options
 let config = {};
@@ -84,18 +85,61 @@ async function main(config = {}, options) {
 					}
 				];
 			} else {
-				console.error(
-					`${color.red}config file cannot be found${color.reset}`
+				console.warn(
+					`${color.yellow}CoCreate.config.js not found. Generating a new one...${color.reset}`
 				);
-				process.exit(1);
+
+				const templatePath = path.resolve(__dirname, './config.template.js');
+				let templateConfig;
+				try {
+					templateConfig = require(templatePath);
+				} catch (e) {
+					console.error(`${color.red}Error loading config.template.js:`, e, color.reset);
+					process.exit(1);
+				}
+				
+				// Customize the template with repository information from package.json
+				const currentRepoPath = '.'; // Current directory where config is generated
+				const repoUrl = package.repository && package.repository.url ? package.repository.url.substring(package.repository.url.indexOf('://') + 3) : '';
+
+				templateConfig.repositories = [
+					{
+						path: currentRepoPath,
+						repo: repoUrl,
+						exclude: ["git"]
+					}
+				];
+				
+				// Set initial organization_id and key from environment or placeholders
+				templateConfig.organization_id = process.env.organization_id || "YOUR_ORGANIZATION_ID";
+				templateConfig.key = process.env.key || "YOUR_API_KEY";
+				
+				// Resolve host domain if available from environment variable HOST_DOMAIN
+				if (process.env.host_domain) {
+					templateConfig.host.$branch.master = `wss://${process.env.host_domain}`;
+					templateConfig.host.$branch.dev = `wss://dev.${process.env.host_domain}`;
+					templateConfig.host.$branch.test = `wss://test.${process.env.host_domain}`;
+				}
+
+
+				const newConfigPath = path.join(directory, 'CoCreate.config.js');
+				const configContent = `module.exports = ${JSON.stringify(templateConfig, null, 2)};`;
+
+				await fsp.writeFile(newConfigPath, configContent);
+
+				console.log(`${color.green}Generated CoCreate.config.js at ${newConfigPath}${color.reset}`);
+
+				// Use the newly generated template config
+				config = templateConfig;
+				config.configPath = newConfigPath; // Ensure configPath is set to the new file
 			}
 		}
-
-		directory = path.dirname(config.configPath);
-		console.warn(
-			`${color.yellow}using config ${config.configPath} ${color.reset}`
-		);
 	}
+
+	directory = path.dirname(config.configPath);
+	console.warn(
+		`${color.yellow}using config ${config.configPath} ${color.reset}`
+	);
 
 	config.hideMessage = false;
 
