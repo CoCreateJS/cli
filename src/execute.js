@@ -34,28 +34,51 @@ module.exports = async function execute(command, config) {
 			}
 
 			const packageJsonPath = path.resolve(repo.path, "package.json");
-			const packageObj = require(packageJsonPath);
-			repo.entry = packageObj.main;
+			
+			// Try to load package.json if it exists
+			if (fs.existsSync(packageJsonPath)) {
+				try {
+					const packageObj = require(packageJsonPath);
+					repo.entry = packageObj.main;
+				} catch (err) {
+					// Log error but continue
+					console.error("error reading packageObj:", err.message);
+				}
+			}
 
 			if (isPredefined) {
 				repositories.push(repo);
 				continue;
 			}
 
-			console.log(color.green + `${repo.name}: ` + color.reset, command);
-			let exitCode;
-			if (config.hideMessage) {
-				const { error } = await exec(command, {
-					cwd: repo.absolutePath
-				});
+			// For non-predefined commands, skip if package.json doesn't exist
+			if (!fs.existsSync(packageJsonPath)) {
+				continue;
+			}
 
-				if (error) exitCode = 1;
+			console.log(color.green + `${repo.name}: ` + color.reset, command);
+			let exitCode = 0;
+			if (config.hideMessage) {
+				try {
+					await exec(command, {
+						cwd: repo.absolutePath
+					});
+				} catch (error) {
+					exitCode = 1;
+				}
 			} else {
-				exitCode = await spawn(type, args, {
-					cwd: repo.absolutePath,
-					shell: true,
-					stdio: "inherit"
-				});
+				// Properly escape arguments when using shell
+				const escapedArgs = args.map(arg => `"${arg.replace(/"/g, '\\"')}"`).join(' ');
+				const commandStr = escapedArgs ? `${type} ${escapedArgs}` : type;
+				
+				try {
+					await exec(commandStr, {
+						cwd: repo.absolutePath,
+						stdio: "inherit"
+					});
+				} catch (error) {
+					exitCode = 1;
+				}
 			}
 
 			if (exitCode !== 0) {
