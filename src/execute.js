@@ -67,18 +67,12 @@ module.exports = async function execute(command, config) {
 					exitCode = 1;
 				}
 			} else {
-				// Properly escape arguments when using shell
-				const escapedArgs = args.map(arg => `"${arg.replace(/"/g, '\\"')}"`).join(' ');
-				const commandStr = escapedArgs ? `${type} ${escapedArgs}` : type;
-				
-				try {
-					await exec(commandStr, {
-						cwd: repo.absolutePath,
-						stdio: "inherit"
-					});
-				} catch (error) {
-					exitCode = 1;
-				}
+				// Use spawn with shell to stream output in real-time
+				exitCode = await spawn(type, args, {
+					cwd: repo.absolutePath,
+					shell: true,
+					stdio: "inherit"
+				});
 			}
 
 			if (exitCode !== 0) {
