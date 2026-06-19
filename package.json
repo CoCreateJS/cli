@@ -16,6 +16,7 @@
     "access": "public"
   },
   "scripts": {
+    "postinstall": "node src/postinstall.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "automated": "nodejs src/commands/fs/automated.js",
     "bump": "node src/commands/fs/bump.js",
