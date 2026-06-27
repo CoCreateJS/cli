@@ -52,7 +52,6 @@
     "@cocreate/config": "^1.13.4",
     "@cocreate/file": "^1.21.2",
     "@cocreate/nginx": "^1.4.4",
-    "@cocreate/webpack": "^1.4.3",
     "@google/generative-ai": "0.24.1"
   },
   "allowScripts": {
