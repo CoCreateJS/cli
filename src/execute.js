@@ -8,90 +8,116 @@ const { getConfig } = require("./getConfig");
 const { color } = require("./fonts");
 
 module.exports = async function execute(command, config) {
-	let failed = [];
-	let [filename, ...args] = command.replaceAll("'", '"').trim().split(" ");
+    let failed = [];
+    let [filename, ...args] = command.replaceAll("'", '"').trim().split(" ");
 
-	let type;
+    let type;
 
-	if (filename.endsWith(".js")) {
-		type = filename.slice(0, -3);
-	} else {
-		type = filename;
-		filename += ".js";
-	}
+    if (filename.endsWith(".js")) {
+        type = filename.slice(0, -3);
+    } else {
+        type = filename;
+        filename += ".js";
+    }
 
-	let predefined = path.resolve(__dirname, "commands", filename);
-	let isPredefined = fs.existsSync(predefined);
-	let repositories = [];
+    let predefined = path.resolve(__dirname, "commands", filename);
+    let isPredefined = fs.existsSync(predefined);
+    let repositories = [];
 
-	for (let repo of config.repositories || []) {
-		try {
-			if (
-				repo.exclude &&
-				(repo.exclude.includes(type) || repo.exclude.includes(filename))
-			) {
-				continue;
-			}
+    // --- CONSOLIDATE REPOSITORIES ---
+    // Merge both modules and projects from the new configuration structure
+    let targetRepos = [];
+    
+    if (config.modules) {
+        Object.entries(config.modules).forEach(([name, repo]) => {
+            // Ensure it's a valid object and has a path
+            if (typeof repo === 'object' && repo !== null && repo.path) {
+                targetRepos.push({ name, ...repo });
+            }
+        });
+    }
+    
+    if (config.projects) {
+        Object.entries(config.projects).forEach(([name, repo]) => {
+            if (typeof repo === 'object' && repo !== null && repo.path) {
+                targetRepos.push({ name, ...repo });
+            }
+        });
+    }
 
-			const packageJsonPath = path.resolve(repo.path, "package.json");
-			
-			// Try to load package.json if it exists
-			if (fs.existsSync(packageJsonPath)) {
-				try {
-					const packageObj = require(packageJsonPath);
-					repo.entry = packageObj.main;
-				} catch (err) {
-					// Log error but continue
-					console.error("error reading packageObj:", err.message);
-				}
-			}
+    // Backward compatibility for transitioning configs
+    if (config.repositories && Array.isArray(config.repositories)) {
+        targetRepos = targetRepos.concat(config.repositories);
+    }
 
-			if (isPredefined) {
-				repositories.push(repo);
-				continue;
-			}
+    for (let repo of targetRepos) {
+        try {
+            if (
+                repo.exclude &&
+                (repo.exclude.includes(type) || repo.exclude.includes(filename))
+            ) {
+                continue;
+            }
 
-			// For non-predefined commands, skip if package.json doesn't exist
-			if (!fs.existsSync(packageJsonPath)) {
-				continue;
-			}
+            const packageJsonPath = path.resolve(repo.path, "package.json");
+            
+            // Try to load package.json if it exists
+            if (fs.existsSync(packageJsonPath)) {
+                try {
+                    const packageObj = require(packageJsonPath);
+                    repo.entry = packageObj.main;
+                } catch (err) {
+                    // Log error but continue
+                    console.error("error reading packageObj:", err.message);
+                }
+            }
 
-			console.log(color.green + `${repo.name}: ` + color.reset, command);
-			let exitCode = 0;
-			if (config.hideMessage) {
-				try {
-					await exec(command, {
-						cwd: repo.absolutePath
-					});
-				} catch (error) {
-					exitCode = 1;
-				}
-			} else {
-				// Use spawn with shell to stream output in real-time
-				exitCode = await spawn(type, args, {
-					cwd: repo.absolutePath,
-					shell: true,
-					stdio: "inherit"
-				});
-			}
+            if (isPredefined) {
+                repositories.push(repo);
+                continue;
+            }
 
-			if (exitCode !== 0) {
-				repo.error = "command failed: " + command;
-				failed.push(repo);
-			}
-		} catch (err) {
-			console.error(
-				color.red +
-					`an error occured executing command in ${repo.name} repository` +
-					color.reset,
-				err.message
-			);
-		}
-	}
+            // For non-predefined commands, skip if package.json doesn't exist
+            if (!fs.existsSync(packageJsonPath)) {
+                continue;
+            }
 
-	if (isPredefined) {
-		failed = await require(predefined)(repositories, args);
-	}
+            console.log(color.green + `${repo.name || repo.path}: ` + color.reset, command);
+            let exitCode = 0;
+            if (config.hideMessage) {
+                try {
+                    await exec(command, {
+                        cwd: repo.absolutePath || path.resolve(repo.path)
+                    });
+                } catch (error) {
+                    exitCode = 1;
+                }
+            } else {
+                // Use spawn with shell to stream output in real-time
+                exitCode = await spawn(type, args, {
+                    cwd: repo.absolutePath || path.resolve(repo.path),
+                    shell: true,
+                    stdio: "inherit"
+                });
+            }
 
-	return failed;
+            if (exitCode !== 0) {
+                repo.error = "command failed: " + command;
+                failed.push(repo);
+            }
+        } catch (err) {
+            console.error(
+                color.red +
+                    `an error occured executing command in ${repo.name || repo.path} repository` +
+                    color.reset,
+                err.message
+            );
+        }
+    }
+
+    if (isPredefined) {
+        failed = await require(predefined)(repositories, args);
+    }
+
+    return failed;
 };
