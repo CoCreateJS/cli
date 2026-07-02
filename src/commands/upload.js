@@ -5,91 +5,122 @@ const { getConfig } = require("../getConfig");
 const translate = require("./other/translate");
 
 module.exports = async function upload(directory, args) {
-	if (args && !Array.isArray(args)) args = [args];
+    if (args && !Array.isArray(args)) args = [args];
 
-	let isWatch = false;
-	let translateFn = null;
+    let isWatch = false;
+    let translateFn = null;
 
-	if (args && (args.includes("-t") || args.includes("--translate"))) {
-		translateFn = translate;
-		args = args.filter((arg) => arg !== "-t" && arg !== "--translate");
-	}
+    if (args && (args.includes("-t") || args.includes("--translate"))) {
+        translateFn = translate;
+        args = args.filter((arg) => arg !== "-t" && arg !== "--translate");
+    }
 
-	if (directory && typeof directory === "string") {
-		if (["-w", "--watch"].includes(directory)) {
-			isWatch = true;
-		}
-	}
+    if (directory && typeof directory === "string") {
+        if (["-w", "--watch"].includes(directory)) {
+            isWatch = true;
+        }
+    }
 
-	directory = process.cwd();
+    directory = process.cwd();
 
-	if (
-		isWatch ||
-		(args && (args.includes("-w") || args.includes("--watch")))
-	) {
-		for (let i = 0; i < args.length; i++) {
-			if (args[i].startsWith("-")) continue;
-			else if (path.isAbsolute(args[i])) directory = args[i];
-			else directory = path.resolve(directory, args[i]);
-		}
+    if (
+        isWatch ||
+        (args && (args.includes("-w") || args.includes("--watch")))
+    ) {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i].startsWith("-")) continue;
+            else if (path.isAbsolute(args[i])) directory = args[i];
+            else directory = path.resolve(directory, args[i]);
+        }
 
-		console.log("Watching: ", directory);
-		fs.watch(
-			directory,
-			{ recursive: true },
-			async (eventType, filename) => {
-				if (!filename.includes("CoCreate.config.js")) {
-					const config = await getConfig(directory, filename);
-					if (config.configPath) {
-						await file(config, config.configPath, config.filePath, {
-							translate: translateFn
-						});
-					} else {
-						console.log(
-							"Failed to read or parse CoCreate.config.js."
-						);
-					}
-				}
-			}
-		);
-	} else {
-		if (!args || !args.length) {
-			const CoCreateConfig = await getConfig(directory);
-			if (CoCreateConfig.configPath) {
-				await file(
-					CoCreateConfig,
-					CoCreateConfig.configPath,
-					CoCreateConfig.filePath,
-					{ translate: translateFn }
-				);
-			} else {
-				console.log("Failed to read or parse CoCreate.config.js.");
-			}
-		} else {
-			for (let arg of args) {
-				arg = path.resolve(directory, arg);
-				let CoCreateConfig;
+        console.log("Watching: ", directory);
+        
+        // Initialize Map to store timers for debouncing rapid duplicate events
+        const debounceTimers = new Map();
 
-				try {
-					CoCreateConfig = JSON.parse(arg);
-				} catch (error) {}
+        fs.watch(
+            directory,
+            { recursive: true },
+            (eventType, filename) => {
+                // Guard against null filenames and ignore config changes
+                if (!filename || filename.includes("CoCreate.config.js")) return;
 
-				if (!CoCreateConfig) {
-					CoCreateConfig = await getConfig(arg);
-					if (CoCreateConfig.configPath) {
-						await file(
-							CoCreateConfig,
-							CoCreateConfig.configPath,
-							CoCreateConfig.filePath,
-							{ translate: translateFn }
-						);
-					} else {
-						console.log(
-							"Failed to read or parse CoCreate.config.js."
-						);
-					}
-				}
-			}
-		}
-	}
+                // Clear any existing timer for this file
+                if (debounceTimers.has(filename)) {
+                    clearTimeout(debounceTimers.get(filename));
+                }
+
+                // Set a new timer to debounce the event
+                const timer = setTimeout(async () => {
+                    // Remove the timer from the map once it executes
+                    debounceTimers.delete(filename);
+
+                    // 1. Only check file existence if the OS flagged a 'rename'
+                    // This handles creates, moves, and deletions properly.
+                    if (eventType === 'rename') {
+                        const fullPath = path.resolve(directory, filename);
+                        if (!fs.existsSync(fullPath)) {
+                            // console.log(`File deleted, renamed or relocated: ${filename}`);
+                            // TODO: Add file deletion/removal logic here in the future.
+                            return;
+                        }
+                    }
+
+                    // 2. Process the valid, updated file
+                    const config = await getConfig(directory, filename);
+                    if (config.configPath) {
+                        await file(config, config.configPath, config.filePath, {
+                            translate: translateFn
+                        });
+                    } else {
+                        console.log(
+                            "Failed to read or parse CoCreate.config.js."
+                        );
+                    }
+                }, 100); // 100ms debounce window
+
+                // Store the timer
+                debounceTimers.set(filename, timer);
+            }
+        );
+    } else {
+        if (!args || !args.length) {
+            const CoCreateConfig = await getConfig(directory);
+            if (CoCreateConfig.configPath) {
+                await file(
+                    CoCreateConfig,
+                    CoCreateConfig.configPath,
+                    CoCreateConfig.filePath,
+                    { translate: translateFn }
+                );
+            } else {
+                console.log("Failed to read or parse CoCreate.config.js.");
+            }
+        } else {
+            for (let arg of args) {
+                arg = path.resolve(directory, arg);
+                let CoCreateConfig;
+
+                try {
+                    CoCreateConfig = JSON.parse(arg);
+                } catch (error) {}
+
+                if (!CoCreateConfig) {
+                    CoCreateConfig = await getConfig(arg);
+                    if (CoCreateConfig.configPath) {
+                        await file(
+                            CoCreateConfig,
+                            CoCreateConfig.configPath,
+                            CoCreateConfig.filePath,
+                            { translate: translateFn }
+                        );
+                    } else {
+                        console.log(
+                            "Failed to read or parse CoCreate.config.js."
+                        );
+                    }
+                }
+            }
+        }
+    }
 };
