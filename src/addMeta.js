@@ -1,82 +1,73 @@
 const fs = require("fs");
 const path = require("path");
-const util = require("node:util");
-const exec = util.promisify(require("node:child_process").exec);
 
+/**
+ * CLI-compatible function to enrich repository configurations with metadata 
+ * (e.g. package.json details, dependency maps).
+ * 
+ * @param {Array<Object>} repos - List of repository configuration items.
+ * @param {Array<Object>} failed - Reference list to register execution failures.
+ * @param {string} [directory] - Optional parent directory to override path resolution.
+ * @returns {Promise<Array<Object>>} Enriched repositories array.
+ */
 module.exports = async function addMeta(repos, failed, directory) {
-	let packageManager;
-	for (let i = 0; i < repos.length; i++) {
-		repos[i].name = path.basename(repos[i].path);
-		repos[i].plainName = repos[i].name.substring(9);
+    const cwd = process.cwd();
 
-		if (directory) {
-			repos[i].absolutePath = path.resolve(directory, repos[i].path);
-			const parsedPath = path.parse(repos[i].absolutePath);
-			repos[i].directory = parsedPath.dir;
-		}
+    for (let i = 0; i < repos.length; i++) {
+        const repo = repos[i];
+        if (!repo) continue;
 
-		let packagejson = path.resolve(repos[i].absolutePath, "package.json");
-		if (!fs.existsSync(packagejson)) {
-			console.error("package json not found for", repos[i].name);
-			failed.push({
-				name: repos[i].name,
-				error: "package json not found"
-			});
-		} else {
-			let packageObj;
-			try {
-				packageObj = require(packagejson);
-			} catch (err) {
-				console.error("packageObj", err.message);
-			}
+        const rawPath = repo.path || repo.absolutePath || repo.directory;
+        if (!rawPath) {
+            continue;
+        }
 
-			repos[i].packageName = packageObj.name;
+        // Standard clean names resolution
+        const pathBasedName = path.basename(rawPath);
+        repo.name = repo.name || pathBasedName;
+        repo.plainName = repo.name.startsWith("CoCreate-")
+            ? repo.name.substring(9)
+            : repo.name;
 
-			repos[i].deps = Object.keys(
-				packageObj["dependencies"] || {}
-			).filter((packageName) => packageName.startsWith("@cocreate/"));
-			repos[i].devDeps = Object.keys(
-				packageObj["devDependencies"] || {}
-			).filter((packageName) => packageName.startsWith("@cocreate/"));
+        // Always calculate and resolve absolute paths first, even if package.json doesn't exist yet!
+        // This guarantees that commands like gitClone can run without crashing on undefined paths.
+        let resolvedAbsolutePath = null;
+        if (directory) {
+            resolvedAbsolutePath = path.resolve(directory, rawPath);
+        } else {
+            resolvedAbsolutePath = path.resolve(cwd, rawPath);
+        }
 
-			if (!repos[i].packageManager) {
-				if (packageManager) repos[i].packageManager = packageManager;
-				else {
-					repos[i].packageManager = "npm";
-					let lockFile = path.resolve(
-						repos[i].absolutePath,
-						"package-lock.json"
-					);
-					if (!fs.existsSync(lockFile)) {
-						lockFile = path.resolve(
-							repos[i].absolutePath,
-							"pnpm-lock.yaml"
-						);
-						if (fs.existsSync(lockFile))
-							repos[i].packageManager = "pnpm";
-						else {
-							lockFile = path.resolve(
-								repos[i].absolutePath,
-								"yarn.lock"
-							);
-							if (fs.existsSync(lockFile))
-								repos[i].packageManager = "yarn";
-							else {
-								try {
-									const { error } = await exec(
-										"yarn --version"
-									);
-									if (!error)
-										repos[i].packageManager = "yarn";
-								} catch (e) {}
-							}
-						}
-						packageManager = repos[i].packageManager;
-					}
-				}
-			}
-		}
-	}
+        repo.absolutePath = repo.absolutePath || resolvedAbsolutePath;
+        repo.directory = repo.directory || path.dirname(resolvedAbsolutePath);
 
-	return repos;
+        // Check if package.json exists. If not, silently skip metadata extraction.
+        const packageJsonPath = path.join(repo.absolutePath, "package.json");
+        if (!fs.existsSync(packageJsonPath)) {
+            continue;
+        }
+
+        let packageObj;
+        try {
+            packageObj = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+        } catch (err) {
+            // Only log and register real failures, such as corrupted JSON structure
+            console.error(`[addMeta] Error reading/parsing package.json at ${packageJsonPath}:`, err.message);
+            failed.push({
+                name: repo.name,
+                error: `[addMeta] failed to parse package.json: ${err.message}`
+            });
+            continue;
+        }
+
+        repo.packageName = packageObj.name;
+
+        repo.deps = Object.keys(packageObj.dependencies || {})
+            .filter((packageName) => packageName.startsWith("@cocreate/"));
+
+        repo.devDeps = Object.keys(packageObj.devDependencies || {})
+            .filter((packageName) => packageName.startsWith("@cocreate/"));
+    }
+
+    return repos;
 };

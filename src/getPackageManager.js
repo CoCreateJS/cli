@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
 
 /**
- * Detects the active package manager based on workspace lockfiles,
- * and distinguishes between Yarn Classic and Yarn Berry.
+ * Detects the active package manager based strictly on workspace lockfiles,
+ * distinguishing between Yarn Classic and Yarn Berry by analyzing yarn.lock directly.
  * 
  * @returns {"bun"|"pnpm"|"yarn-berry"|"yarn-classic"|"npm"}
  */
@@ -21,21 +20,17 @@ function getPackageManager() {
         return "pnpm";
     }
 
-    // Yarn lockfile checks
-    if (fs.existsSync(path.join(cwd, "yarn.lock"))) {
-        // If .yarnrc.yml exists, it's definitely Yarn Berry (v2-v4)
-        if (fs.existsSync(path.join(cwd, ".yarnrc.yml"))) {
-            return "yarn-berry";
-        }
-        
-        // Active fallback check by running yarn --version
+    // Yarn lockfile check
+    const yarnLockPath = path.join(cwd, "yarn.lock");
+    if (fs.existsSync(yarnLockPath)) {
         try {
-            const version = execSync("yarn --version", { encoding: "utf8" }).trim();
-            if (!version.startsWith("1.")) {
+            const content = fs.readFileSync(yarnLockPath, "utf8");
+            // Yarn Berry lockfiles contain a "__metadata:" block at the top
+            if (content.includes("__metadata:")) {
                 return "yarn-berry";
             }
         } catch (e) {
-            // If the command fails, safely assume Classic (v1)
+            // Safe fallback to classic if the file cannot be read
         }
         return "yarn-classic";
     }

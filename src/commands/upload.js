@@ -1,4 +1,7 @@
-const file = require("@cocreate/file");
+let fileModule = require("@cocreate/file");
+// Safely resolve default export if it's wrapped as an ESM module
+const file = fileModule && fileModule.default ? fileModule.default : fileModule;
+
 const path = require("path");
 const fs = require("fs");
 const { getConfig } = require("../getConfig");

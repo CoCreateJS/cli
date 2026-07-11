@@ -1,108 +1,147 @@
 const spawn = require("../spawn");
 const path = require("path");
 const fs = require("fs");
-const { color } = require("../fonts");
 const getPackageManager = require("../getPackageManager");
 const getOS = require("../getOS");
 
 const { isWindows } = getOS();
 
 /**
- * Parses local configuration files (.npmrc or .yarnrc) to detect if an 
- * external node_modules target directory has been configured.
- * Fallback to standard process.cwd()/node_modules.
+ * Resolves the configured target node_modules directory path.
+ * Targeted check: parses RC files only associated with the active package manager.
  * 
- * NOTE: We only need this manual parsing for the custom `--fast` direct 
- * symlinking mode. When spawning native package manager commands, the PMs
- * natively read these files automatically.
+ * @param {string} packageManager - The active package manager name (npm, pnpm, yarn-classic, yarn-berry, bun).
+ * @returns {string} Fully resolved path to the node_modules folder.
  */
-function getTargetNodeModulesPath() {
+function getTargetNodeModulesPath(packageManager) {
     const cwd = process.cwd();
-    
-    // Check for .npmrc config (e.g. used by pnpm or custom npm setups)
-    const npmrcPath = path.join(cwd, ".npmrc");
-    if (fs.existsSync(npmrcPath)) {
-        try {
-            const content = fs.readFileSync(npmrcPath, "utf-8");
-            // Match "modules-dir = path" while ignoring comments (# or ;) and handling spaces/quotes
-            const match = content.match(/^\s*modules-dir\s*=\s*["']?([^"'\r\n#;]+)["']?/m);
-            if (match && match[1]) {
-                return path.resolve(cwd, match[1].trim());
+
+    // Check .npmrc config if utilizing npm or pnpm
+    if (packageManager === "npm" || packageManager === "pnpm") {
+        const npmrcPath = path.join(cwd, ".npmrc");
+        if (fs.existsSync(npmrcPath)) {
+            try {
+                const content = fs.readFileSync(npmrcPath, "utf-8");
+                const match = content.match(/^\s*modules-dir\s*=\s*["']?([^"'\r\n#;]+)["']?/m);
+                if (match && match[1]) {
+                    return path.resolve(cwd, match[1].trim());
+                }
+            } catch (e) {
+                // Gracefully ignore reading errors
             }
-        } catch (e) {
-            // Gracefully ignore reading errors and fallback
         }
     }
 
-    // Check for .yarnrc config (Yarn Classic v1)
-    const yarnrcPath = path.join(cwd, ".yarnrc");
-    if (fs.existsSync(yarnrcPath)) {
-        try {
-            const content = fs.readFileSync(yarnrcPath, "utf-8");
-            // Match "--modules-folder path" or "--install.modules-folder path" handling quotes
-            const match = content.match(/^\s*--(?:install\.)?modules-folder\s+["']?([^"'\r\n#]+)["']?/m);
-            if (match && match[1]) {
-                return path.resolve(cwd, match[1].trim());
+    // Check .yarnrc config if utilizing Yarn (Classic or Berry configured for custom folders)
+    if (packageManager === "yarn-classic" || packageManager === "yarn-berry") {
+        const yarnrcPath = path.join(cwd, ".yarnrc");
+        if (fs.existsSync(yarnrcPath)) {
+            try {
+                const content = fs.readFileSync(yarnrcPath, "utf-8");
+                const match = content.match(/^\s*--(?:install\.)?modules-folder\s+["']?([^"'\r\n#]+)["']?/m);
+                if (match && match[1]) {
+                    return path.resolve(cwd, match[1].trim());
+                }
+            } catch (e) {
+                // Gracefully ignore reading errors
             }
-        } catch (e) {
-            // Gracefully ignore reading errors and fallback
         }
     }
 
-    // Default to the standard local path if no configs are present
+    // Fallback to default
     return path.resolve(cwd, "node_modules");
 }
 
+/**
+ * CLI-compatible link command that establishes local connections using 
+ * direct symlinking (fast mode) or the host system's package manager.
+ * 
+ * @param {Array<Object>} repos - Array of repository configurations.
+ * @param {Array<string>} args - Process arguments passed to the CLI command.
+ * @returns {Promise<Array<Object>>} List of packages that encountered real errors.
+ */
 module.exports = async (repos, args) => {
     const failed = [];
     const packageManager = getPackageManager();
+    const cwd = process.cwd();
     
-    // Determine the actual binary execution name
+    // Convert generic internal yarn manager labels to the standard system execution binary name
     const binName = (packageManager === "yarn-classic" || packageManager === "yarn-berry") 
         ? "yarn" 
         : packageManager;
     
-    // Check if the user explicitly requested fast-mode manual symlinking via a flag.
-    const useDirectSymlink = args && args.includes("--fast");
+    const useSymlink = args && args.includes("--symlink");
     let targetNodeModules = null;
 
-    console.log(
-        color.cyan + 
-        `[coc] Active Package Manager: ${packageManager.toUpperCase()}` + 
-        color.reset
+    // --- PLUG'N'PLAY DETECTION & SHORT-CIRCUIT ---
+    const isPnp = packageManager === "yarn-berry" && (
+        fs.existsSync(path.join(cwd, ".pnp.cjs")) || 
+        fs.existsSync(path.join(cwd, ".pnp.js"))
     );
 
-    if (useDirectSymlink) {
-        // We only parse configurations manually if we are doing direct symlinking bypass
-        targetNodeModules = getTargetNodeModulesPath();
-        
-        console.log(
-            color.cyan + 
-            `[coc] [Fast Mode] Targeted node_modules directory: ${targetNodeModules}\n` + 
-            color.reset
-        );
+    if (isPnp) {
+        console.log(`Active Package Manager: ${packageManager.toUpperCase()} (Plug'n'Play Active)`);
+        console.log("No linking required (automatic mapping handled natively by the package manager).");
+        return failed;
+    }
 
-        // Ensure the manual target node_modules folder exists
+    console.log(`Active Package Manager: ${packageManager.toUpperCase()}`);
+
+    if (useSymlink) {
+        targetNodeModules = getTargetNodeModulesPath(packageManager);
+        const relativeTargetDir = path.relative(cwd, targetNodeModules) || "node_modules";
+        
+        console.log(`[Symlink Mode] Target: ${relativeTargetDir}\n`);
+
         if (!fs.existsSync(targetNodeModules)) {
             await fs.promises.mkdir(targetNodeModules, { recursive: true });
         }
     } else {
-        // Native linking reads these configurations automatically, so we skip file-system overhead here
         console.log(""); 
     }
 
     for (let repo of repos) {
         if (!repo) continue;
         if (repo.exclude && repo.exclude.includes("link")) continue;
-        if (process.cwd() === repo.absolutePath) continue;
+
+        const rawPath = repo.path || repo.absolutePath || repo.directory;
+        if (!rawPath) continue;
+
+        // Resolve local path values relative to the active command execution folder
+        repo.absolutePath = repo.absolutePath || path.resolve(cwd, rawPath);
+        repo.directory = repo.directory || path.dirname(repo.absolutePath);
+        repo.name = repo.name || path.basename(repo.absolutePath);
+
+        // Do not process current execution folder inside linking commands
+        if (cwd === repo.absolutePath) continue;
+
+        const relativeRepoPath = path.relative(cwd, repo.absolutePath);
+
+        // Verify package directory exists on local disk
+        if (!fs.existsSync(repo.absolutePath)) {
+            console.log(`Skipped (not found): ${relativeRepoPath}`);
+            continue;
+        }
+
+        // Dynamically resolve package name from local package.json if it is missing
+        if (!repo.packageName) {
+            const packageJsonPath = path.join(repo.absolutePath, "package.json");
+            if (fs.existsSync(packageJsonPath)) {
+                try {
+                    const packageObj = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+                    repo.packageName = packageObj.name;
+                } catch (e) {
+                    // Ignore reading errors
+                }
+            }
+            repo.packageName = repo.packageName || repo.name;
+        }
 
         try {
-            if (useDirectSymlink) {
-                // Keep the manual symlink option as a lightweight fallback
+            if (useSymlink) {
                 const linkDestination = path.join(targetNodeModules, repo.packageName);
                 const sourcePath = path.resolve(repo.absolutePath);
 
-                // Clean up destination and symlink
                 await fs.promises.mkdir(path.dirname(linkDestination), { recursive: true });
                 try {
                     const stat = await fs.promises.lstat(linkDestination);
@@ -116,48 +155,27 @@ module.exports = async (repos, args) => {
                 const type = isWindows ? "junction" : "dir";
                 await fs.promises.symlink(sourcePath, linkDestination, type);
 
-                console.log(
-                    color.green + 
-                    `[link] Symlinked: ${repo.packageName} -> ${repo.absolutePath}` + 
-                    color.reset
-                );
+                console.log(`Successfully symlinked: ${relativeRepoPath} -> node_modules/${repo.packageName}`);
             } else {
                 
                 // --- 1-STEP DIRECT PATH LINKING (pnpm & Yarn Berry) ---
                 if (packageManager === "pnpm" || packageManager === "yarn-berry") {
-                    console.log(
-                        color.yellow + 
-                        `Executing: ${binName} link ${repo.absolutePath} (inside ${process.cwd()})` + 
-                        color.reset
-                    );
-
-                    if (packageManager === "yarn-berry") {
-                        console.log(
-                            color.cyan + 
-                            `💡 Note: Yarn Berry will modify package.json with a resolutions block mapping to your local path.` + 
-                            color.reset
-                        );
-                    }
+                    console.log(`Linking: ${repo.packageName}...`);
 
                     let linkCode = await spawn(binName, ["link", repo.absolutePath], {
-                        cwd: process.cwd(),
+                        cwd: cwd,
                         shell: true,
                         stdio: "inherit"
                     });
 
                     if (linkCode !== 0) {
-                        throw new Error(`Direct-path linking execution failed for ${repo.packageName}`);
+                        throw new Error(`Execution failed`);
                     }
                     
                 } else {
                     // --- 2-STEP GLOBAL REGISTRY LINKING (npm, Yarn Classic, Bun) ---
-                    console.log(
-                        color.yellow + 
-                        `Executing: ${binName} link (inside ${repo.absolutePath})` + 
-                        color.reset
-                    );
+                    console.log(`Registering: ${repo.packageName}...`);
                     
-                    // Step 1: Register the package globally from its source directory
                     let regCode = await spawn(binName, ["link"], {
                         cwd: repo.absolutePath,
                         shell: true,
@@ -165,40 +183,33 @@ module.exports = async (repos, args) => {
                     });
 
                     if (regCode !== 0) {
-                        throw new Error(`Global registration failed inside ${repo.absolutePath}`);
+                        throw new Error(`Global registration failed`);
                     }
 
-                    console.log(
-                        color.yellow + 
-                        `Executing: ${binName} link ${repo.packageName} (inside ${process.cwd()})` + 
-                        color.reset
-                    );
+                    console.log(`Linking: ${repo.packageName}...`);
 
-                    // Step 2: Link registered package to host application
                     let linkCode = await spawn(binName, ["link", repo.packageName], {
-                        cwd: process.cwd(),
+                        cwd: cwd,
                         shell: true,
                         stdio: "inherit"
                     });
 
                     if (linkCode !== 0) {
-                        throw new Error(`Link execution failed inside host directory`);
+                        throw new Error(`Host linkage failed`);
                     }
                 }
                 
-                console.log(""); // Clean spacing line
+                console.log(`Successfully linked: ${repo.packageName}`);
+                console.log(""); 
             }
 
         } catch (err) {
+            // Log failure message and append package metadata for downstream retrying steps
             failed.push({
-                name: repo.name,
+                name: repo.name || repo.packageName,
                 error: err.message
             });
-            console.error(
-                color.red +
-                `Failed to link ${repo.name}: ${err.message}` +
-                color.reset
-            );
+            console.error(`Failed to link: ${repo.name || repo.packageName} (${err.message})`);
         }
     }
 
