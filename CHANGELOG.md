@@ -1,3 +1,29 @@
+# [1.55.0](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.54.2...v1.55.0) (2026-07-11)
+
+
+### Bug Fixes
+
+* correct variable name in download function for clarity in logging ([6273a5a](https://github.com/CoCreate-app/CoCreate-cli/commit/6273a5a8d25223e7bf343a191c7e9e933861211c))
+* improve error handling and package.json loading in execute command ([0214b7e](https://github.com/CoCreate-app/CoCreate-cli/commit/0214b7e23c2bbd448dd8d7c18e52f30c36ab353d))
+* removed post install ([435c87e](https://github.com/CoCreate-app/CoCreate-cli/commit/435c87e80d0733d23b019cb4692f23fa055050eb))
+* replace argument escaping with spawn for real-time output in execute command ([056fdc3](https://github.com/CoCreate-app/CoCreate-cli/commit/056fdc3cd3c304b27aa35da8026cba974caff970))
+* semantic version handling. Reorganize .gitignore for improved clarity and structure ([33fc5d4](https://github.com/CoCreate-app/CoCreate-cli/commit/33fc5d484159d02f00bffee6d1c9f1b6daecb81f))
+* update dependencies to latest compatible versions in package.json ([077d517](https://github.com/CoCreate-app/CoCreate-cli/commit/077d517c999a848862889c88295222370bb16ec9))
+
+
+### Features
+
+* add config template and enhance config generation in coc.js ([ad0bbae](https://github.com/CoCreate-app/CoCreate-cli/commit/ad0bbae9b77e91401cd64b3b9b740d15effbf206))
+* add getOS and getPackageManager functions for OS detection and package manager identification ([e679cff](https://github.com/CoCreate-app/CoCreate-cli/commit/e679cff72222b99b456ec0893b16892d4f06434c))
+* add postinstall script for global linking of the CLI ([e23858b](https://github.com/CoCreate-app/CoCreate-cli/commit/e23858b0b071d82d6d608a18fca1364119d67319))
+* download and delete commands for @cocreate/file integration ([3f354a6](https://github.com/CoCreate-app/CoCreate-cli/commit/3f354a6e524f983572721a89b5789609c3b4818f))
+* enhance CLI configuration handling and repository execution logic ([684d372](https://github.com/CoCreate-app/CoCreate-cli/commit/684d3720e63f2e890884e60a752bf0c69e26ba9c))
+* enhance getConfig function to support dynamic imports and improved error handling ([cc3ec8f](https://github.com/CoCreate-app/CoCreate-cli/commit/cc3ec8fde2e1a4531d2f11e63d49ddc98d7bb708))
+* enhance getTargetNodeModulesPath function with improved error handling and regex matching for config files ([2d421ee](https://github.com/CoCreate-app/CoCreate-cli/commit/2d421eeaac87348802de21d64509c240534d5d25))
+* enhance repository management commands with improved error handling and logging ([e925748](https://github.com/CoCreate-app/CoCreate-cli/commit/e9257482161caca3f00f3ca06abcd8e6820293ac))
+* enhance upload command with debouncing for file watching and improved config handling ([25d9de3](https://github.com/CoCreate-app/CoCreate-cli/commit/25d9de317f8864a57eb101f68a63fa700d37d4ae))
+* implement detection of external node_modules directory and active package manager ([d575a35](https://github.com/CoCreate-app/CoCreate-cli/commit/d575a359c5b1a6490179956af8a185903ab68633))
+
 ## [1.54.2](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.54.1...v1.54.2) (2026-02-04)
 
 
