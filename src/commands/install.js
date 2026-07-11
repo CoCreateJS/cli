@@ -8,9 +8,6 @@ module.exports = async function (repos, args) {
 
 		repos = await addMeta(repos, failed);
 
-		let symlinkFailed = await require("./symlink.js")(repos, args);
-		if (symlinkFailed && symlinkFailed.length) failed.push(...symlinkFailed);
-
 		let linkFailed = await require("./link.js")(repos, args);
 		if (linkFailed && linkFailed.length) failed.push(...linkFailed);
 	} catch (err) {
