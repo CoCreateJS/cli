@@ -58,12 +58,12 @@ module.exports = async function download(directory, args) {
 				return;
 			}
 
-			const restored = await file.download(
+			const downloaded = await file.download(
 				CoCreateConfig,
 				CoCreateConfig.configPath,
 				target
 			);
-			console.log('Restored:', restored && restored.length ? restored.length : 0, 'files for', target);
+			console.log('Downloaded:', downloaded && downloaded.length ? downloaded.length : 0, 'files for', target);
 		} catch (err) {
 			console.error('Download failed for', target, err);
 		}
