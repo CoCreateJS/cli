@@ -6,8 +6,8 @@ const readline = require("readline");
 const util = require("node:util");
 const exec = util.promisify(require("node:child_process").exec);
 
-const getPackageManager = require("../getPackageManager");
-const getOS = require("../getOS");
+const getPackageManager = require("./getPackageManager.js");
+const getOS = require("./getOS");
 
 /**
  * Prompts user for yes/no input
