@@ -1,3 +1,10 @@
+# [1.56.0](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.55.0...v1.56.0) (2026-07-17)
+
+
+### Features
+
+* update automated workflow and release configuration for improved semantic release handling ([434e67a](https://github.com/CoCreate-app/CoCreate-cli/commit/434e67a98071a8d530f020a48b38b1c083f1d04e))
+
 # [1.55.0](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.54.2...v1.55.0) (2026-07-11)
 
 
