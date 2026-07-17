@@ -1,3 +1,10 @@
+## [1.56.1](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.56.0...v1.56.1) (2026-07-17)
+
+
+### Bug Fixes
+
+* correct import paths for getPackageManager and getOS in postinstall.js ([9e19fb7](https://github.com/CoCreate-app/CoCreate-cli/commit/9e19fb788fb0af71bef6ecb3f08e10a255a4a0e4))
+
 # [1.56.0](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.55.0...v1.56.0) (2026-07-17)
 
 
