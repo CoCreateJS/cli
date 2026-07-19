@@ -490,20 +490,6 @@ module.exports = {
             ]
         },
         {
-            "path": "../CoCreate-node-autoscaler",
-            "repo": "github.com/CoCreate-app/CoCreate-node-autoscaler.git",
-            "exclude": [
-                "fs/webpack"
-            ]
-        },
-        {
-            "path": "../../CoCreate-plugins/CoCreate-nginx",
-            "repo": "github.com/CoCreate-app/CoCreate-nginx.git",
-            "exclude": [
-                "fs/webpack"
-            ]
-        },
-        {
             "path": "../CoCreate-server",
             "repo": "github.com/CoCreate-app/CoCreate-server.git",
             "exclude": [
