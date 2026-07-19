@@ -1,3 +1,10 @@
+## [1.56.3](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.56.2...v1.56.3) (2026-07-19)
+
+
+### Bug Fixes
+
+* set default branch to main ([238545f](https://github.com/CoCreate-app/CoCreate-cli/commit/238545fd83b8ac7d2fe69f9db30c08159c8dfcd1))
+
 ## [1.56.2](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.56.1...v1.56.2) (2026-07-17)
 
 
