@@ -63,7 +63,7 @@ function createOrUpdateFile(directoryPath, fileName) {
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   about:
     runs-on: ubuntu-latest
