@@ -1,3 +1,10 @@
+## [1.56.4](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.56.3...v1.56.4) (2026-07-19)
+
+
+### Bug Fixes
+
+* remove deprecated repository configurations from CoCreate.config.js ([d1f0a67](https://github.com/CoCreate-app/CoCreate-cli/commit/d1f0a67d8324fbcec9638c84a9a6a5b7164ee0bd))
+
 ## [1.56.3](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.56.2...v1.56.3) (2026-07-19)
 
 
