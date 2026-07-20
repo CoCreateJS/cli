@@ -49,7 +49,7 @@ const MODEL_NAME = "gemini-2.5-flash-lite";
 // Exported function to generate translation object for HTML source and languages
 async function getApiKey(options) {
 	if (options.apiKey) return options.apiKey;
-	const config = await Config({
+	const config = await Config.request({
 		GoogleGenerativeAIApiKey: {
 			prompt: "Enter your Google Generative AI API key: "
 		}

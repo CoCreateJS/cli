@@ -10,6 +10,6 @@ module.exports = async function (repos, args) {
         object[arg[0]] = { value: arg[1] }
     }
 
-    await config(object)
+    await config.request(object)
 
 }
