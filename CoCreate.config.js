@@ -277,10 +277,6 @@ module.exports = {
             "repo": "github.com/CoCreate-app/CoCreate-utils.git"
         },
         {
-            "path": "../CoCreate-uuid",
-            "repo": "github.com/CoCreate-app/CoCreate-uuid.git"
-        },
-        {
             "path": "../CoCreate-validation",
             "repo": "github.com/CoCreate-app/CoCreate-validation.git"
         },
