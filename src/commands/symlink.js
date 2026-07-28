@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const spawn = require("../../spawn");
+const spawn = require("../spawn");
 
 const cwdPath = path.resolve(process.cwd());
 let cwdNodeModulesPath = path.resolve(cwdPath, "node_modules");
