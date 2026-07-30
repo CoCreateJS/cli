@@ -48,9 +48,9 @@
     "coc": "src/coc.js"
   },
   "dependencies": {
-    "@cocreate/acme": "^1.5.2",
-    "@cocreate/config": "^1.14.3",
-    "@cocreate/file": "^1.22.2",
+    "@cocreate/acme": "^1.6.0",
+    "@cocreate/config": "^1.16.0",
+    "@cocreate/file": "^1.23.0",
     "@google/generative-ai": "0.24.1"
   },
   "allowScripts": {
