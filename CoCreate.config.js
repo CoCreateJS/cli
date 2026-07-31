@@ -28,9 +28,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        admin: {
-            path: "../../CoCreate-admin",
-            repo: "github.com/CoCreate-app/CoCreate-admin.git",
+        app: {
+            path: "../../CoCreate-app",
+            repo: "github.com/CoCreate-app/CoCreate-app.git",
             exclude: [
                 "fs/webpack"
             ]
