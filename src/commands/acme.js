@@ -1,4 +1,4 @@
-const { requestCertificate } = require("@cocreate/acme");
+const { requestCertificate } = require("@cocreate/certificates");
 
 module.exports = async function nginx(repos, args) {
 	let failed = [];

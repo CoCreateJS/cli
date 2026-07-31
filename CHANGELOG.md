@@ -248,7 +248,7 @@
 
 ### Features
 
-* add '@cocreate/acme' and '@cocreate/nginx' ([0eb81e8](https://github.com/CoCreate-app/CoCreate-cli/commit/0eb81e88a54931bc2fc78663393b15338a62740f))
+* add '@cocreate/certificates' and '@cocreate/nginx' ([0eb81e8](https://github.com/CoCreate-app/CoCreate-cli/commit/0eb81e88a54931bc2fc78663393b15338a62740f))
 * coc acme to manage certs ([13049fa](https://github.com/CoCreate-app/CoCreate-cli/commit/13049fa7316269d1fc64b0f9c378b10937c0e7b7))
 
 ## [1.45.3](https://github.com/CoCreate-app/CoCreate-cli/compare/v1.45.2...v1.45.3) (2023-12-18)
