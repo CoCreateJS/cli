@@ -127,11 +127,11 @@ function getPackageDependencies(repoPath) {
  * 
  * @param {Object} repo - Target repository object.
  * @param {Map<string, Object>} workspaceMap - Available local workspace repos.
- * @param {Object} options - Command options (useSymlink, packageManager, binName, failedArray).
+ * @param {Object} options - Command options (useSymlink, packageManager, binName, failed, linkedPairs, depth).
  * @param {Set<string>} visited - Track visited packages to prevent circular loops.
  */
 async function linkRepoAndDependencies(repo, workspaceMap, options, visited = new Set()) {
-    const { useSymlink, packageManager, binName, failed } = options;
+    const { useSymlink, packageManager, binName, failed, linkedPairs, stats, depth = 1 } = options;
 
     // Circular dependency prevention guard
     if (visited.has(repo.absolutePath)) {
@@ -158,8 +158,21 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
     }
 
     const targetNodeModules = getTargetNodeModulesPath(repo.absolutePath, packageManager);
+    const indent = "  ".repeat(depth);
 
-    for (const depRepo of localDepsToLink) {
+    for (let i = 0; i < localDepsToLink.length; i++) {
+        const depRepo = localDepsToLink[i];
+        const pairKey = `${repo.packageName}->${depRepo.packageName}`;
+
+        // Skip re-linking identical pairs to avoid redundant I/O and console clutter
+        if (linkedPairs.has(pairKey)) {
+            continue;
+        }
+        linkedPairs.add(pairKey);
+
+        const isLast = i === localDepsToLink.length - 1;
+        const branchChar = isLast ? "└─" : "├─";
+
         try {
             if (useSymlink) {
                 // Direct Symlink Mode
@@ -182,14 +195,15 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
                 const type = isWindows ? "junction" : "dir";
                 await fs.promises.symlink(sourcePath, linkDestination, type);
 
-                console.log(`  [Sub-link] ${repo.packageName} -> ${depRepo.packageName}`);
+                console.log(`${indent}${branchChar} 🔗 ${depRepo.packageName}`);
+                stats.totalSymlinks++;
             } else {
                 // Package Manager CLI Link Mode
                 if (packageManager === "pnpm" || packageManager === "yarn-berry") {
                     let linkCode = await spawn(binName, ["link", depRepo.absolutePath], {
                         cwd: repo.absolutePath,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (linkCode !== 0) throw new Error(`Link execution failed`);
                 } else {
@@ -197,29 +211,33 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
                     let regCode = await spawn(binName, ["link"], {
                         cwd: depRepo.absolutePath,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (regCode !== 0) throw new Error(`Global registration failed`);
 
                     let linkCode = await spawn(binName, ["link", depRepo.packageName], {
                         cwd: repo.absolutePath,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (linkCode !== 0) throw new Error(`Link command failed`);
                 }
-                console.log(`  [Sub-link] ${repo.packageName} -> ${depRepo.packageName}`);
+                console.log(`${indent}${branchChar} 🔗 ${depRepo.packageName}`);
+                stats.totalSymlinks++;
             }
 
             // Recurse down the dependency tree for the nested dependency
-            await linkRepoAndDependencies(depRepo, workspaceMap, options, visited);
+            await linkRepoAndDependencies(depRepo, workspaceMap, {
+                ...options,
+                depth: depth + 1
+            }, visited);
 
         } catch (err) {
             failed.push({
                 name: `${repo.packageName} -> ${depRepo.packageName}`,
                 error: err.message
             });
-            console.error(`Failed nested link: ${repo.packageName} -> ${depRepo.packageName} (${err.message})`);
+            console.error(`${indent}${branchChar} ❌ ${depRepo.packageName} (${err.message})`);
         }
     }
 }
@@ -234,6 +252,7 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
  * @returns {Promise<Array<Object>>} List of packages that encountered real errors.
  */
 module.exports = async (repos, args) => {
+    const startTime = Date.now();
     const failed = [];
     const packageManager = getPackageManager();
     const cwd = process.cwd();
@@ -257,11 +276,17 @@ module.exports = async (repos, args) => {
         return failed;
     }
 
-    console.log(`Active Package Manager: ${packageManager.toUpperCase()}`);
-    console.log(`Linking Mode: ${useSymlink ? "Direct Symlink" : "Package Manager CLI"}`);
-    console.log("Building workspace local dependency graph...\n");
+    console.log(`\n==================================================`);
+    console.log(` Active Package Manager: ${packageManager.toUpperCase()}`);
+    console.log(` Linking Strategy:       ${useSymlink ? "Direct Symlink (Fast)" : "Package Manager CLI"}`);
+    console.log(`==================================================\n`);
 
     const workspaceMap = buildWorkspaceMap(repos, cwd);
+    const linkedPairs = new Set();
+    const stats = { primaryPackages: 0, totalSymlinks: 0 };
+
+    const filterableRepos = repos.filter(r => r && (!r.exclude || !r.exclude.includes("link")));
+    let currentIdx = 0;
 
     for (let repo of repos) {
         if (!repo) continue;
@@ -280,13 +305,15 @@ module.exports = async (repos, args) => {
             continue;
         }
 
+        currentIdx++;
         const repoMeta = workspaceMap.get(repo.packageName) || {
             ...repo,
             absolutePath,
             packageName: repo.packageName || path.basename(absolutePath)
         };
 
-        console.log(`🔗 Processing primary package: ${repoMeta.packageName}`);
+        stats.primaryPackages++;
+        console.log(`[${currentIdx}/${filterableRepos.length}] 📦 ${repoMeta.packageName}`);
 
         // Perform top-level link into current workspace root
         try {
@@ -306,38 +333,38 @@ module.exports = async (repos, args) => {
 
                 const type = isWindows ? "junction" : "dir";
                 await fs.promises.symlink(repoMeta.absolutePath, linkDestination, type);
-                console.log(`Successfully symlinked: ${repoMeta.packageName} -> node_modules/${repoMeta.packageName}`);
+                stats.totalSymlinks++;
             } else {
                 if (packageManager === "pnpm" || packageManager === "yarn-berry") {
                     let linkCode = await spawn(binName, ["link", repoMeta.absolutePath], {
                         cwd,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (linkCode !== 0) throw new Error("Execution failed");
                 } else {
                     let regCode = await spawn(binName, ["link"], {
                         cwd: repoMeta.absolutePath,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (regCode !== 0) throw new Error("Global registration failed");
 
                     let linkCode = await spawn(binName, ["link", repoMeta.packageName], {
                         cwd,
                         shell: true,
-                        stdio: "inherit"
+                        stdio: "pipe"
                     });
                     if (linkCode !== 0) throw new Error("Host linkage failed");
                 }
-                console.log(`Successfully linked: ${repoMeta.packageName}`);
+                stats.totalSymlinks++;
             }
         } catch (err) {
             failed.push({
                 name: repoMeta.packageName,
                 error: err.message
             });
-            console.error(`Failed to link primary repo: ${repoMeta.packageName} (${err.message})`);
+            console.error(`  ❌ Failed primary link: ${repoMeta.packageName} (${err.message})`);
         }
 
         const visited = new Set();
@@ -345,11 +372,22 @@ module.exports = async (repos, args) => {
             useSymlink,
             packageManager,
             binName,
-            failed
+            failed,
+            linkedPairs,
+            stats,
+            depth: 1
         }, visited);
-
-        console.log(""); // blank separator line
     }
+
+    const durationSec = ((Date.now() - startTime) / 1000).toFixed(2);
+
+    console.log(`\n--------------------------------------------------`);
+    console.log(`✨ Linking Complete!`);
+    console.log(`   Primary Packages Processed: ${stats.primaryPackages}`);
+    console.log(`   Total Connections Linked:   ${stats.totalSymlinks}`);
+    console.log(`   Errors Encountered:         ${failed.length}`);
+    console.log(`   Time Elapsed:               ${durationSec}s`);
+    console.log(`--------------------------------------------------\n`);
 
     return failed;
 };
