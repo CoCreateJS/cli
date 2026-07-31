@@ -48,7 +48,7 @@
     "coc": "src/coc.js"
   },
   "dependencies": {
-    "@cocreate/certificates": "^1.7.0",
+    "@cocreate/certificates": "^1.10.0",
     "@cocreate/config": "^1.17.0",
     "@cocreate/file": "^1.23.0",
     "@google/genai": "2.15.0"
