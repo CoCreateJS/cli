@@ -291,9 +291,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        certificates: {
-            path: "../CoCreate-certificates",
-            repo: "github.com/CoCreate-app/CoCreate-certificates.git",
+        "server-tls": {
+            path: "../CoCreate-server-tls",
+            repo: "github.com/CoCreate-app/CoCreate-server-tls.git",
             exclude: [
                 "fs/webpack"
             ]
