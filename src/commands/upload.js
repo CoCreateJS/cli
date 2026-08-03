@@ -2,6 +2,10 @@ let fileModule = require("@cocreate/file");
 // Safely resolve default export if it's wrapped as an ESM module
 const file = fileModule && fileModule.default ? fileModule.default : fileModule;
 
+// Required to watch more files than the default limit on Linux systems. You may need to run these commands in your terminal:
+// echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+// echo "fs.inotify.max_user_instances=1024" | sudo tee -a /etc/sysctl.conf
+// sudo sysctl -p
 const path = require("path");
 const fs = require("fs");
 const { getConfig } = require("../getConfig");
