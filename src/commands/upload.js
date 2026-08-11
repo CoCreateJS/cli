@@ -77,6 +77,7 @@ module.exports = async function upload(directory, args) {
                     const config = await getConfig(directory, filename);
                     if (config.configPath) {
                         await file(config, config.configPath, config.filePath, {
+                            watch: true,
                             translate: translateFn
                         });
                     } else {
