@@ -13,7 +13,7 @@ Fork the [project on Github](https://github.com/CoCreate-app/CoCreate-cli) and c
 ```
 git clone https://github.com/contributor/CoCreate-cli.git
 cd CoCreate-cli
-git remote add upstream https://github.com/CoCreate-app/CoCreate-cli.git
+git remote add upstream https://gitlab.com/cocreatejs/CoCreate-cli.git
 ```
 
 ## Create a Topic Branch
