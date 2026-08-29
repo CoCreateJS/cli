@@ -33,12 +33,8 @@ async function linkGlobally() {
     try {
         // Resolve target OS properties and correct package manager binary name
         const { isWindows, platform } = getOS();
-        const activePackageManager = getPackageManager();
-
-        // Standardize binary lookup name (fallback yarn-berry / yarn-classic to yarn executable)
-        const packageManager = (activePackageManager === "yarn-classic" || activePackageManager === "yarn-berry")
-            ? "yarn"
-            : activePackageManager;
+        const manager = getPackageManager();
+        const packageManager = manager.executable;
 
         const linkCommand = `${packageManager} link`;
         const cliPath = path.resolve(__dirname, "..");

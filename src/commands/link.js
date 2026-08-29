@@ -244,7 +244,7 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
 
 /**
  * CLI-compatible link command that establishes local connections using 
- * direct symlinking (fast mode) or the host system's package manager,
+ * direct symlinking (the reliable default) or the host system's package manager,
  * recursively traversing and linking local dependencies tree-wide.
  * 
  * @param {Array<Object>} repos - Array of repository configurations.
@@ -254,30 +254,22 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
 module.exports = async (repos, args) => {
     const startTime = Date.now();
     const failed = [];
-    const packageManager = getPackageManager();
+    const manager = getPackageManager();
+    const packageManager = manager.id;
     const cwd = process.cwd();
 
     // Convert generic internal yarn manager labels to standard executable binary name
-    const binName = (packageManager === "yarn-classic" || packageManager === "yarn-berry") 
-        ? "yarn" 
-        : packageManager;
+    const binName = manager.executable;
 
-    const useSymlink = args && args.includes("--symlink");
-
-    // --- PLUG'N'PLAY DETECTION & SHORT-CIRCUIT ---
-    const isPnp = packageManager === "yarn-berry" && (
-        fs.existsSync(path.join(cwd, ".pnp.cjs")) || 
-        fs.existsSync(path.join(cwd, ".pnp.js"))
-    );
-
-    if (isPnp) {
-        console.log(`Active Package Manager: ${packageManager.toUpperCase()} (Plug'n'Play Active)`);
-        console.log("No linking required (automatic mapping handled natively by the package manager).");
-        return failed;
-    }
+    // Workspace repositories already have absolute paths, so linking them
+    // directly avoids Yarn Classic's global registry and its fragile relative
+    // links. Keep package-manager linking available as an explicit compatibility
+    // mode for workflows that require lifecycle behavior from `npm/yarn link`.
+    const strategy = getLinkStrategy(manager, args);
+    const useSymlink = strategy === "direct";
 
     console.log(`\n==================================================`);
-    console.log(` Active Package Manager: ${packageManager.toUpperCase()}`);
+    console.log(` Active Package Manager: ${packageManager.toUpperCase()} (${manager.linker})`);
     console.log(` Linking Strategy:       ${useSymlink ? "Direct Symlink (Fast)" : "Package Manager CLI"}`);
     console.log(`==================================================\n`);
 
@@ -367,16 +359,21 @@ module.exports = async (repos, args) => {
             console.error(`  ❌ Failed primary link: ${repoMeta.packageName} (${err.message})`);
         }
 
-        const visited = new Set();
-        await linkRepoAndDependencies(repoMeta, workspaceMap, {
-            useSymlink,
-            packageManager,
-            binName,
-            failed,
-            linkedPairs,
-            stats,
-            depth: 1
-        }, visited);
+        // Yarn PnP records project-wide resolutions at the workspace root.
+        // Running `yarn link` recursively inside sibling repositories would
+        // mutate those independent projects and is neither needed nor correct.
+        if (manager.linker !== "pnp") {
+            const visited = new Set();
+            await linkRepoAndDependencies(repoMeta, workspaceMap, {
+                useSymlink,
+                packageManager,
+                binName,
+                failed,
+                linkedPairs,
+                stats,
+                depth: 1
+            }, visited);
+        }
     }
 
     const durationSec = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -391,3 +388,19 @@ module.exports = async (repos, args) => {
 
     return failed;
 };
+
+function getLinkStrategy(manager, args = []) {
+    if (args.includes("--package-manager")) return "package-manager";
+    if (args.includes("--symlink")) {
+        if (!manager.usesNodeModules) {
+            throw new Error(
+                `Direct symlinking is not supported by ${manager.id} with ${manager.linker}. ` +
+                "Use the package-manager linking strategy instead."
+            );
+        }
+        return "direct";
+    }
+    return manager.usesNodeModules ? "direct" : "package-manager";
+}
+
+module.exports.getLinkStrategy = getLinkStrategy;
