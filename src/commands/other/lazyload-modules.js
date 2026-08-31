@@ -531,9 +531,9 @@ export async function processOperators(data, event, execute) {
         }
     } else if (typeof execute === "object" && execute !== null) {
         for (let key of Object.keys(execute)) {
-            if (key.startsWith("$") && !["$storage", "$database", "$array", "$filter"].includes(key)) {
+            if (key.startsWith("$") && !["$storage", "$database", "$array", "filter"].includes(key)) {
                 execute[key] = await processOperator(data, event, key, execute[key]);
-            } else if (typeof execute[key] === "string" && execute[key].startsWith("$") && !["$storage", "$database", "$array", "$filter"].includes(execute[key])) {
+            } else if (typeof execute[key] === "string" && execute[key].startsWith("$") && !["$storage", "$database", "$array", "filter"].includes(execute[key])) {
                 execute[key] = await processOperator(data, event, execute[key]);
             } else if (Array.isArray(execute[key])) {
                 execute[key] = await processOperators(data, event, execute[key]);
@@ -541,7 +541,7 @@ export async function processOperators(data, event, execute) {
                 execute[key] = await processOperators(data, event, execute[key]);
             }
         }
-    } else if (typeof execute === "string" && execute.startsWith("$") && !["$storage", "$database", "$array", "$filter"].includes(execute)) {
+    } else if (typeof execute === "string" && execute.startsWith("$") && !["$storage", "$database", "$array", "filter"].includes(execute)) {
         execute = await processOperator(data, event, execute);
     }
 
@@ -625,7 +625,7 @@ export async function fetchScriptFromDatabaseAndSave(name, moduleConfig, dataCon
         method: "object.read",
         host: moduleConfig.object.hostname,
         array: moduleConfig.array,
-        $filter: {
+        filter: {
             query: {
                 host: { $in: [moduleConfig.object.hostname, "*"] },
                 pathname: moduleConfig.object.pathname
