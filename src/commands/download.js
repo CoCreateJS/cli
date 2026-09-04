@@ -6,6 +6,24 @@ const { getConfig } = require("../getConfig");
 module.exports = async function download(directory, args) {
 	if (args && !Array.isArray(args)) args = [args];
 
+	let destination;
+	let downloadSite = false;
+	const targets = [];
+	for (let i = 0; args && i < args.length; i++) {
+		if (args[i] === "--site") {
+			downloadSite = true;
+		} else if (args[i] === "--destination") {
+			destination = args[++i];
+			if (!destination) {
+				throw new Error("--destination requires a path");
+			}
+		} else {
+			targets.push(args[i]);
+		}
+	}
+	if (downloadSite) targets.unshift("/");
+	args = targets;
+
 	directory = process.cwd();
 
 	// Process targets
@@ -61,7 +79,12 @@ module.exports = async function download(directory, args) {
 			const downloaded = await file.download(
 				CoCreateConfig,
 				CoCreateConfig.configPath,
-				target
+				target,
+				{
+					destination: destination
+						? path.resolve(process.cwd(), destination)
+						: undefined
+				}
 			);
 			console.log('Downloaded:', downloaded && downloaded.length ? downloaded.length : 0, 'files for', target);
 		} catch (err) {
@@ -69,4 +92,3 @@ module.exports = async function download(directory, args) {
 		}
 	}
 };
-

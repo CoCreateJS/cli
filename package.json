@@ -51,6 +51,7 @@
     "@cocreate/certificates": "^1.11.0",
     "@cocreate/config": "^1.21.0",
     "@cocreate/file": "^1.25.0",
+    "@cocreate/socket-client": "^1.42.1",
     "@google/genai": "2.15.0"
   }
 }
