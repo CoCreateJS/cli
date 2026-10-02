@@ -55,6 +55,7 @@ module.exports = async function send(directory, args = []) {
             import("@cocreate/config"),
             import("@cocreate/socket-client")
         ]);
+        await socket.init();
         const connection = await Config.prompt(
             {
                 organization_id: { prompt: "Enter your organization_id: " },

@@ -13,32 +13,19 @@ module.exports = {
 		}
 	},
 
-	// Directories to upload to the server
-	// Each directory entry specifies files to upload and how to store them
-	directories: [
-		{
-			// Path to the directory containing files to upload
-			entry: "./dist",
-			
-			// File patterns to exclude from upload
-			exclude: [".txt"],
-			
-			// Array name for storing files on server
-			array: "files",
-			
-			// Object structure for each file
-			// {{name}}, {{source}}, {{directory}}, etc. are template variables replaced automatically
-			object: {
-				name: "{{name}}",
-				src: "{{source}}",
-				host: ["*"],
-				directory: "{{directory}}",
-				path: "{{path}}",
-				pathname: "{{pathname}}",
-				"content-type": "{{content-type}}",
-				public: "true"
-			}
-		}
+	// Filesystem rules used by `coc template` to build a reusable project template
+	// Paths are resolved relative to this CoCreate.config.js file.
+	template: [
+		// {
+		// 	entry: "./",
+		// 	output: "../CoCreate-app-template",
+		// 	exclude: ["./src/admin/", "./src/account/", "./src/apps/", "./src/config/", "./node_modules/", "./.git/"]
+		// },
+		// {
+		// 	entry: "./",
+		// 	output: "../CoCreate-app-template",
+		// 	include: ["./src/admin/", "./src/account/", "./src/apps/"]
+		// }
 	],
 
 	// Sources allows you to inject file contents into objects on the server
