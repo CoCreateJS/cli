@@ -56,7 +56,7 @@ async function main(config = {}, options) {
     let directory = options["directory"] || process.cwd();
     
     // Check if any repository targets exist in the configuration
-    if (!config.repositories && !config.modules && !config.projects) {
+    if (!config.repositories && !config.modules && !config.plugins && !config.projects) {
         let configString = options["config"];
         if (configString) {
             try {
@@ -162,6 +162,14 @@ async function main(config = {}, options) {
         }
     }
 
+    // Add metadata to plugins with a local repository path
+    if (config.plugins) {
+        const pluginRepos = Object.values(config.plugins).filter(r => typeof r === 'object' && r !== null && r.path);
+        if (pluginRepos.length) {
+            await addMeta(pluginRepos, [], directory);
+        }
+    }
+
     // Add metadata to projects
     if (config.projects) {
         const projectRepos = Object.values(config.projects).filter(r => typeof r === 'object' && r !== null && r.path);
@@ -208,9 +216,10 @@ async function promptRetry(failed, config, options) {
         async (answer) => {
             rl.close();
             if (answer.toLowerCase() === "yes" || answer.toLowerCase() === "y") {
-                // Ensure we only retry the failed ones by clearing the existing modules/projects
+                // Ensure we only retry the failed ones by clearing existing modules/plugins/projects
                 config.repositories = failed;
                 delete config.modules;
+                delete config.plugins;
                 delete config.projects;
                 await main(config, options);
             } else {

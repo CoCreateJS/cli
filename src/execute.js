@@ -36,6 +36,14 @@ module.exports = async function execute(command, config) {
             }
         });
     }
+
+    if (config.plugins) {
+        Object.entries(config.plugins).forEach(([name, repo]) => {
+            if (typeof repo === 'object' && repo !== null && repo.path) {
+                targetRepos.push({ name, ...repo });
+            }
+        });
+    }
     
     if (config.projects) {
         Object.entries(config.projects).forEach(([name, repo]) => {
