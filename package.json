@@ -15,6 +15,39 @@
   "publishConfig": {
     "access": "public"
   },
+  "cocreate": {
+    "environment": [
+      "server"
+    ],
+    "interface": {
+      "schemaVersion": 1,
+      "summary": "Polyrepo management bash CLI tool. Run all git commands and yarn commands on multiple repositories. Also includes a few custom macros for cloning, installing, etc.",
+      "source": "src/commands/index.js",
+      "api": {
+        "exports": [
+          "config"
+        ],
+        "commands": [
+          "acme",
+          "branch",
+          "bump",
+          "clone",
+          "config",
+          "delete",
+          "download",
+          "gitignore",
+          "install",
+          "link",
+          "nginx",
+          "send",
+          "storage",
+          "symlink",
+          "template",
+          "upload"
+        ]
+      }
+    }
+  },
   "scripts": {
     "postinstall": "node src/postinstall.js",
     "test": "node --test",
