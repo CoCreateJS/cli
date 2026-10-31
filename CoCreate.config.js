@@ -234,9 +234,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "cron-jobs": {
-            path: "../CoCreate-cron-jobs",
-            repo: "github.com/cocreatejs/CoCreate-cron-jobs.git",
+        "server-cron": {
+            path: "../CoCreate-server-cron",
+            repo: "github.com/cocreatejs/CoCreate-server-cron.git",
             exclude: [
                 "fs/webpack"
             ]
