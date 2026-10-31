@@ -74,7 +74,7 @@ module.exports = {
 			path: "./CoCreateJS",
 			
 			// Git repository URL
-			repo: "github.com/CoCreate-app/CoCreateJS.git",
+			repo: "github.com/CoCreateJS/CoCreateJS.git",
 			
 			// Optional: exclude command types from running on this repository
 			// These are COMMAND TYPES to exclude, not file patterns
@@ -86,7 +86,7 @@ module.exports = {
 		// Add more repositories as needed for polyrepo management
 		// {
 		// 	path: "./CoCreate-modules/CoCreate-cli",
-		// 	repo: "github.com/CoCreate-app/CoCreate-cli.git",
+		// 	repo: "github.com/CoCreateJS/CoCreate-cli.git",
 		// 	exclude: ["link"] // Don't link this package during "coc install"
 		// }
 	]

@@ -290,9 +290,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        usage: {
-            path: "../CoCreate-usage",
-            repo: "github.com/cocreatejs/CoCreate-usage.git",
+        "server-usage": {
+            path: "../CoCreate-server-usage",
+            repo: "github.com/CoCreateJS/CoCreate-server-usage.git",
             exclude: [
                 "fs/webpack"
             ]
