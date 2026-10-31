@@ -283,9 +283,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        sitemap: {
-            path: "../CoCreate-sitemap",
-            repo: "github.com/cocreatejs/CoCreate-sitemap.git",
+        "server-sitemap": {
+            path: "../CoCreate-server-sitemap",
+            repo: "github.com/CoCreateJS/CoCreate-server-sitemap.git",
             exclude: [
                 "fs/webpack"
             ]
