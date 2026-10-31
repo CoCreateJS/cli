@@ -42,7 +42,6 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-
         actions: {
             path: "../CoCreate-actions",
             repo: "gitlab.com/cocreatejs/CoCreate-actions.git"
@@ -51,17 +50,9 @@ module.exports = {
             path: "../CoCreate-api",
             repo: "gitlab.com/cocreatejs/CoCreate-api.git"
         },
-        attributes: {
-            path: "../CoCreate-attributes",
-            repo: "gitlab.com/cocreatejs/CoCreate-attributes.git"
-        },
         cache: {
             path: "../CoCreate-cache",
             repo: "gitlab.com/cocreatejs/CoCreate-cache.git"
-        },
-        calculate: {
-            path: "../CoCreate-calculate",
-            repo: "gitlab.com/cocreatejs/CoCreate-calculation.git"
         },
         cli: {
             path: "../CoCreate-cli",
@@ -73,18 +64,6 @@ module.exports = {
         clipboard: {
             path: "../CoCreate-clipboard",
             repo: "gitlab.com/cocreatejs/CoCreate-clipboard.git"
-        },
-        clone: {
-            path: "../CoCreate-clone",
-            repo: "gitlab.com/cocreatejs/CoCreate-clone.git"
-        },
-        codearea: {
-            path: "../CoCreate-codearea",
-            repo: "gitlab.com/cocreatejs/CoCreate-codearea.git"
-        },
-        "conditional-logic": {
-            path: "../CoCreate-conditional-logic",
-            repo: "gitlab.com/cocreatejs/CoCreate-conditional-logic.git"
         },
         config: {
             path: "../CoCreate-config",
@@ -107,10 +86,7 @@ module.exports = {
             path: "../CoCreate-cursors",
             repo: "gitlab.com/cocreatejs/CoCreate-cursors.git"
         },
-        dnd: {
-            path: "../CoCreate-dnd",
-            repo: "gitlab.com/cocreatejs/CoCreate-dnd.git"
-        },
+
         docs: {
             path: "../CoCreate-docs",
             repo: "gitlab.com/cocreatejs/CoCreate-docs.git",
@@ -142,15 +118,10 @@ module.exports = {
             path: "../CoCreate-filter",
             repo: "gitlab.com/cocreatejs/CoCreate-filter.git"
         },
-        "floating-label": {
-            path: "../CoCreate-floating-label",
-            repo: "gitlab.com/cocreatejs/CoCreate-floating-label.git"
-        },
         fullscreen: {
             path: "../CoCreate-fullscreen",
             repo: "gitlab.com/cocreatejs/CoCreate-fullscreen.git"
         },
-
         indexeddb: {
             path: "../CoCreate-indexeddb",
             repo: "gitlab.com/cocreatejs/CoCreate-indexeddb.git"
@@ -167,10 +138,6 @@ module.exports = {
             path: "../CoCreate-link",
             repo: "gitlab.com/cocreatejs/CoCreate-link.git"
         },
-        modal: {
-            path: "../CoCreate-modal",
-            repo: "gitlab.com/cocreatejs/CoCreate-modal.git"
-        },
         notification: {
             path: "../CoCreate-notification",
             repo: "gitlab.com/cocreatejs/CoCreate-notification.git"
@@ -182,14 +149,6 @@ module.exports = {
         organizations: {
             path: "../CoCreate-organizations",
             repo: "gitlab.com/cocreatejs/CoCreate-organizations.git"
-        },
-        "overlay-scroll": {
-            path: "../CoCreate-overlay-scroll",
-            repo: "gitlab.com/cocreatejs/CoCreate-overlay-scroll.git"
-        },
-        parallax: {
-            path: "../CoCreate-parallax",
-            repo: "gitlab.com/cocreatejs/CoCreate-parallax.git"
         },
         state: {
             path: "../CoCreate-state",
@@ -203,23 +162,10 @@ module.exports = {
             path: "../CoCreate-print",
             repo: "gitlab.com/cocreatejs/CoCreate-print.git"
         },
-        progress: {
-            path: "../CoCreate-progress",
-            repo: "gitlab.com/cocreatejs/CoCreate-progress.git"
-        },
         pwa: {
             path: "../CoCreate-pwa",
             repo: "gitlab.com/cocreatejs/CoCreate-pwa.git"
         },
-        "random-color": {
-            path: "../CoCreate-random-color",
-            repo: "gitlab.com/cocreatejs/CoCreate-random-color.git"
-        },
-        remove: {
-            path: "../CoCreate-remove",
-            repo: "gitlab.com/cocreatejs/CoCreate-remove.git"
-        },
-
         render: {
             path: "../CoCreate-render",
             repo: "gitlab.com/cocreatejs/CoCreate-render.git"
@@ -228,10 +174,6 @@ module.exports = {
             path: "../CoCreate-resize",
             repo: "gitlab.com/cocreatejs/CoCreate-resize.git"
         },
-        "rich-text": {
-            path: "../CoCreate-rich-text",
-            repo: "gitlab.com/cocreatejs/CoCreate-rich-text.git"
-        },
         scroll: {
             path: "../CoCreate-scroll",
             repo: "gitlab.com/cocreatejs/CoCreate-scroll.git"
@@ -239,10 +181,6 @@ module.exports = {
         search: {
             path: "../CoCreate-search",
             repo: "gitlab.com/cocreatejs/CoCreate-search.git"
-        },
-        select: {
-            path: "../CoCreate-select",
-            repo: "gitlab.com/cocreatejs/CoCreate-select.git"
         },
         selection: {
             path: "../CoCreate-selection",
@@ -256,18 +194,6 @@ module.exports = {
             path: "../CoCreate-social-share",
             repo: "gitlab.com/cocreatejs/CoCreate-social-share.git"
         },
-        text: {
-            path: "../CoCreate-text",
-            repo: "gitlab.com/cocreatejs/CoCreate-text.git"
-        },
-        toolbar: {
-            path: "../CoCreate-toolbar",
-            repo: "gitlab.com/cocreatejs/CoCreate-toolbar.git"
-        },
-        unique: {
-            path: "../CoCreate-unique",
-            repo: "gitlab.com/cocreatejs/CoCreate-unique.git"
-        },
         users: {
             path: "../CoCreate-users",
             repo: "gitlab.com/cocreatejs/CoCreate-users.git"
@@ -279,10 +205,6 @@ module.exports = {
         validation: {
             path: "../CoCreate-validation",
             repo: "gitlab.com/cocreatejs/CoCreate-validation.git"
-        },
-        vdom: {
-            path: "../CoCreate-vdom",
-            repo: "gitlab.com/cocreatejs/CoCreate-vdom.git"
         },
         cocreatews: {
             path: "../../CoCreateWS",
@@ -364,13 +286,6 @@ module.exports = {
         sitemap: {
             path: "../CoCreate-sitemap",
             repo: "gitlab.com/cocreatejs/CoCreate-sitemap.git",
-            exclude: [
-                "fs/webpack"
-            ]
-        },
-        "url-uploader": {
-            path: "../CoCreate-url-uploader",
-            repo: "gitlab.com/cocreatejs/CoCreate-url-uploader.git",
             exclude: [
                 "fs/webpack"
             ]
