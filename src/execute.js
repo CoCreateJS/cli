@@ -7,7 +7,7 @@ const { getConfig } = require("./getConfig");
 
 const { color } = require("./fonts");
 
-module.exports = async function execute(command, config) {
+module.exports = async function execute(command, config, sourceConfig = config) {
     let failed = [];
     let [filename, ...args] = command.replaceAll("'", '"').trim().split(" ");
 
@@ -124,7 +124,7 @@ module.exports = async function execute(command, config) {
     }
 
     if (isPredefined) {
-        failed = await require(predefined)(repositories, args);
+        failed = await require(predefined)(repositories, args, sourceConfig);
     }
 
     return failed;

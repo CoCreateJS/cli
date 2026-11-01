@@ -5,6 +5,7 @@ const path = require("path");
 const readline = require("readline");
 const execute = require("./execute");
 const addMeta = require("./addMeta");
+const cloneConfig = require("./cloneConfig");
 const { color } = require("./fonts");
 const { getConfig } = require("./getConfig");
 const fsp = require('fs').promises;
@@ -52,7 +53,7 @@ let command = commandParts.join(" ");
  * @param {Object} config - The configuration object.
  * @param {Object} options - CLI options/flags.
  */
-async function main(config = {}, options) {
+async function main(config = {}, options, sourceConfigSnapshot) {
     let directory = options["directory"] || process.cwd();
     
     // Check if any repository targets exist in the configuration
@@ -147,6 +148,11 @@ async function main(config = {}, options) {
         `${color.yellow}using config ${config.configPath} ${color.reset}`
     );
 
+    // Preserve the loaded config for commands that need the authored values.
+    // Metadata enrichment and CLI flags operate on a separate working copy.
+    const sourceConfig = sourceConfigSnapshot || cloneConfig(config);
+    config = cloneConfig(config);
+
     config.hideMessage = false;
 
     // Add metadata to traditional repositories
@@ -179,7 +185,7 @@ async function main(config = {}, options) {
     }
 
     // Execute the command across targeted repositories/modules/projects
-    const failed = await execute(command, config);
+    const failed = await execute(command, config, sourceConfig);
 
     // Handle any failed command executions
     if (failed && failed.length > 0) {
@@ -195,7 +201,7 @@ async function main(config = {}, options) {
         }
 
         // Prompt user to retry failed commands
-        await promptRetry(failed, config, options);
+        await promptRetry(failed, config, options, sourceConfig);
     }
 }
 
@@ -205,7 +211,7 @@ async function main(config = {}, options) {
  * @param {Object} config - Configuration object.
  * @param {Object} options - CLI options.
  */
-async function promptRetry(failed, config, options) {
+async function promptRetry(failed, config, options, sourceConfig) {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -216,12 +222,18 @@ async function promptRetry(failed, config, options) {
         async (answer) => {
             rl.close();
             if (answer.toLowerCase() === "yes" || answer.toLowerCase() === "y") {
+                const retrySourceConfig = cloneConfig(sourceConfig);
+                retrySourceConfig.repositories = cloneConfig(failed);
+                delete retrySourceConfig.modules;
+                delete retrySourceConfig.plugins;
+                delete retrySourceConfig.projects;
+
                 // Ensure we only retry the failed ones by clearing existing modules/plugins/projects
                 config.repositories = failed;
                 delete config.modules;
                 delete config.plugins;
                 delete config.projects;
-                await main(config, options);
+                await main(config, options, retrySourceConfig);
             } else {
                 process.exit(0);
             }

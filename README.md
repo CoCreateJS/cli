@@ -28,6 +28,21 @@ $ npm i @cocreate/cli
  coc --config src/repositories.js command
  ```
 
+## Parse configured module documentation
+
+```sh
+coc docs
+coc docs --json
+```
+
+The command reads the current `CoCreate.config.js`, parses JSDoc from each
+configured module and plugin's `src` directory, and skips entries with
+`exclude: ["docs"]`. Set `documentation.template` to a directory containing
+`index.html` and `page.html`, and `documentation.output` to the destination
+directory. `coc docs` then writes an index and one page per configured module.
+`coc docs --json` prints the structured dataset: `{ type, schemaVersion,
+errors, modules }`. Each module contains its metadata and JSDoc doclets.
+
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
