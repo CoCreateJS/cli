@@ -85,7 +85,7 @@ module.exports = {
 		}
 		// Add more repositories as needed for polyrepo management
 		// {
-		// 	path: "./CoCreate-modules/CoCreate-cli",
+		// 	path: "./CoCreate-modules/cli",
 		// 	repo: "github.com/CoCreateJS/CoCreate-cli.git",
 		// 	exclude: ["link"] // Don't link this package during "coc install"
 		// }

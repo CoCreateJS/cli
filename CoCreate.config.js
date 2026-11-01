@@ -298,7 +298,7 @@ module.exports = {
             ]
         },
         webpack: {
-            path: "../../CoCreate-plugins/CoCreate-webpack",
+            path: "../../CoCreate-plugins/webpack",
             repo: "github.com/cocreatejs/CoCreate-webpack.git",
             exclude: [
                 "fs/webpack"
