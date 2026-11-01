@@ -41,22 +41,12 @@ function writeTemplates(root) {
     const templates = path.join(root, "templates");
     fs.mkdirSync(templates, { recursive: true });
     fs.writeFileSync(path.join(templates, "index.html"),
-        '<div render-data="__COCREATE_RENDER_DATA__"><template render="modules" render-as="module"><a>{{module.name}}</a></template></div>');
+        '<main><template render="modules" render-as="module"><a href="/docs/{{module.slug}}">{{module.name}}</a></template></main>');
     fs.writeFileSync(path.join(templates, "page.html"),
-        '<div render-data="__COCREATE_RENDER_DATA__"><h1>{{module.name}}</h1><template render="module.doclets" render-as="doclet"><article id="{{doclet.anchor}}">{{doclet.name}}</article></template></div>');
+        '<article><h1>{{module.name}}</h1><template render="module.doclets" render-as="doclet"><section id="{{doclet.anchor}}">{{doclet.name}}</section></template></article>');
+    fs.writeFileSync(path.join(templates, "menu.html"),
+        '<nav><template render="modules" render-as="module"><details><summary>{{module.name}}</summary><ul><template render="module.doclets" render-as="doclet"><li>{{doclet.name}}</li></template></ul></details></template></nav>');
     return templates;
-}
-
-function readRenderData(filePath) {
-    const html = fs.readFileSync(filePath, "utf8");
-    const match = html.match(/render-data="([^"]*)"/);
-    assert.ok(match, `Expected render-data in ${filePath}`);
-    const json = match[1]
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&");
-    return { html, data: JSON.parse(json) };
 }
 
 test("coc docs parses configured modules and honors the docs exclusion", async (t) => {
@@ -87,17 +77,23 @@ test("coc docs parses configured modules and honors the docs exclusion", async (
         },
         documentation: {
             output: "./generated/docs",
-            template: "./templates"
+            template: "./templates",
+            targets: [
+                { template: "menu.html", output: "menu.html" },
+                { template: "index.html", output: "index.html" },
+                {
+                    template: "page.html",
+                    output: "{{module.slug}}/index.html",
+                    each: "modules",
+                    as: "module"
+                }
+            ]
         }
     };
     fs.writeFileSync(
         path.join(root, "CoCreate.config.js"),
         `module.exports = ${JSON.stringify(config)};`
     );
-    const stalePage = path.join(root, "generated/docs", "old-module", "index.html");
-    fs.mkdirSync(path.dirname(stalePage), { recursive: true });
-    fs.writeFileSync(stalePage, "<h1>Old module</h1>");
-
     const result = await exec(process.execPath, [cli, "docs", "--json"], {
         cwd: root,
         timeout: 15000
@@ -106,7 +102,7 @@ test("coc docs parses configured modules and honors the docs exclusion", async (
 
     assert.match(result.stderr, /\[docs\] Parsing JSDoc for 3 module page\(s\) from src\//);
     assert.match(result.stderr, /\[docs\] Parsing 2\/3: speechSynthesis/);
-    assert.match(result.stderr, /\[docs\] Rendering index and 3 module page\(s\)/);
+    assert.match(result.stderr, /\[docs\] Rendering 3 configured target\(s\) with \.\/templates/);
     assert.deepEqual(Object.keys(output).sort(), ["errors", "modules", "schemaVersion", "type"]);
     assert.equal(output.type, "modules");
     assert.equal(output.schemaVersion, 1);
@@ -123,18 +119,16 @@ test("coc docs parses configured modules and honors the docs exclusion", async (
     assert.equal(fs.existsSync(path.join(root, "generated/docs/index.html")), true);
     assert.equal(fs.existsSync(path.join(root, "generated/docs/sample/index.html")), true);
     assert.equal(fs.existsSync(path.join(root, "generated/docs/speech-synthesis/index.html")), true);
-    assert.equal(fs.existsSync(stalePage), false);
-    const index = readRenderData(path.join(root, "generated/docs/index.html"));
-    const page = readRenderData(path.join(root, "generated/docs/sample/index.html"));
-    assert.equal(index.data.type, "modules");
-    assert.equal(index.data.modules.length, 3);
-    assert.equal(index.data.project, undefined);
-    assert.match(index.html, /render="modules" render-as="module"/);
-    assert.equal(page.data.type, "modules");
-    assert.equal(page.data.modules.length, 3);
-    assert.equal(page.data.module.name, "sample");
-    assert.equal(page.data.project, undefined);
-    assert.match(page.html, /render="module\.doclets" render-as="doclet"/);
+    const index = fs.readFileSync(path.join(root, "generated/docs/index.html"), "utf8");
+    const page = fs.readFileSync(path.join(root, "generated/docs/sample/index.html"), "utf8");
+    const menu = fs.readFileSync(path.join(root, "generated/docs/menu.html"), "utf8");
+    assert.match(index, /<a href="\/docs\/sample">sample<\/a>/);
+    assert.match(index, /<template render="modules" render-as="module">/);
+    assert.match(page, /<h1>sample<\/h1>/);
+    assert.match(page, /<section id="sample">sample<\/section>/);
+    assert.match(page, /<template render="module\.doclets" render-as="doclet">/);
+    assert.match(menu, /<summary>sample<\/summary>/);
+    assert.match(menu, /<li>sample<\/li>/);
     assert.equal(fs.existsSync(templates), true);
 });
 

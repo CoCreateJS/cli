@@ -194,10 +194,12 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
         logProgress(
             `[docs] Rendering ${documentationConfig.targets.length} configured target(s) with ${documentationConfig.template}.`
         );
-        files = CoCreateDocs.renderDocumentation(data, {
+        const { renderValue } = await import("@cocreate/utils");
+        files = await CoCreateDocs.renderDocumentation(data, {
             template: templatePath,
             output: outputPath,
-            targets: documentationConfig.targets
+            targets: documentationConfig.targets,
+            renderValue
         });
     }
 
