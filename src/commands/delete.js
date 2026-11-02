@@ -1,4 +1,4 @@
-const file = require("@cocreate/file");
+const file = require("@cocreate/file/node");
 const path = require("path");
 const fs = require("fs");
 const { getConfig } = require("../getConfig");
@@ -52,12 +52,12 @@ module.exports = async function del(directory, args) {
 
 	async function confirmAndDelete(CoCreateConfig, target) {
 		try {
-			if (typeof file.delete !== 'function') {
-				console.error('Delete not supported: @cocreate/file exposes no delete API.');
+			if (typeof file.deleteFiles !== 'function') {
+				console.error('Delete not supported: @cocreate/file/node exposes no deleteFiles API.');
 				return;
 			}
 
-			const res = await file.delete(
+			const res = await file.deleteFiles(
 				CoCreateConfig,
 				CoCreateConfig.configPath,
 				target

@@ -21,9 +21,9 @@ module.exports = {
         }
     ],
     modules: {
-        cocreatejs: {
-            path: "../../CoCreateJS",
-            repo: "github.com/cocreatejs/CoCreateJS.git",
+        client: {
+            path: "../../CoCreate-client",
+            repo: "github.com/CoCreateJS/CoCreate-client.git",
             exclude: [
                 "fs/webpack"
             ]
@@ -111,8 +111,8 @@ module.exports = {
             repo: "github.com/cocreatejs/CoCreate-events.git"
         },
         file: {
-            path: "../CoCreate-file",
-            repo: "github.com/cocreatejs/CoCreate-file.git"
+            path: "../file",
+            repo: "github.com/CoCreateJS/file.git"
         },
         filter: {
             path: "../CoCreate-filter",
@@ -167,8 +167,8 @@ module.exports = {
             repo: "github.com/cocreatejs/CoCreate-pwa.git"
         },
         render: {
-            path: "../CoCreate-render",
-            repo: "github.com/cocreatejs/CoCreate-render.git"
+            path: "../render",
+            repo: "github.com/CoCreateJS/render.git"
         },
         resize: {
             path: "../CoCreate-resize",
@@ -206,16 +206,16 @@ module.exports = {
             path: "../CoCreate-validation",
             repo: "github.com/cocreatejs/CoCreate-validation.git"
         },
-        cocreatews: {
-            path: "../../CoCreateWS",
-            repo: "github.com/cocreatejs/CoCreateWS.git",
+        server: {
+            path: "../../CoCreate-server",
+            repo: "github.com/CoCreateJS/CoCreate-server.git",
             exclude: [
                 "fs/webpack"
             ]
         },
-        "server-tls": {
-            path: "../CoCreate-server-tls",
-            repo: "github.com/cocreatejs/CoCreate-server-tls.git",
+        "tls": {
+            path: "../CoCreate-tls",
+            repo: "github.com/CoCreateJS/tls.git",
             exclude: [
                 "fs/webpack"
             ]
@@ -234,9 +234,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "server-cron": {
-            path: "../CoCreate-server-cron",
-            repo: "github.com/cocreatejs/CoCreate-server-cron.git",
+        "cron": {
+            path: "../CoCreate-cron",
+            repo: "github.com/CoCreateJS/cron.git",
             exclude: [
                 "fs/webpack"
             ]
@@ -248,13 +248,6 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "file-server": {
-            path: "../CoCreate-file-server",
-            repo: "github.com/cocreatejs/CoCreate-file-server.git",
-            exclude: [
-                "fs/webpack"
-            ]
-        },
         metrics: {
             path: "../CoCreate-metrics",
             repo: "github.com/cocreatejs/CoCreate-metrics.git",
@@ -262,16 +255,9 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        server: {
-            path: "../CoCreate-server",
-            repo: "github.com/cocreatejs/CoCreate-server.git",
-            exclude: [
-                "fs/webpack"
-            ]
-        },
-        "server-side-render": {
-            path: "../CoCreate-server-side-render",
-            repo: "github.com/cocreatejs/CoCreate-server-side-render.git",
+        cluster: {
+            path: "../cluster",
+            repo: "github.com/CoCreateJS/cluster.git",
             exclude: [
                 "fs/webpack"
             ]
@@ -283,23 +269,23 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "server-sitemap": {
-            path: "../CoCreate-server-sitemap",
-            repo: "github.com/CoCreateJS/CoCreate-server-sitemap.git",
+        "sitemap": {
+            path: "../CoCreate-sitemap",
+            repo: "github.com/CoCreateJS/sitemap.git",
             exclude: [
                 "fs/webpack"
             ]
         },
-        "server-usage": {
-            path: "../CoCreate-server-usage",
-            repo: "github.com/CoCreateJS/CoCreate-server-usage.git",
+        "usage": {
+            path: "../CoCreate-usage",
+            repo: "github.com/CoCreateJS/usage.git",
             exclude: [
                 "fs/webpack"
             ]
         },
         webpack: {
             path: "../../CoCreate-plugins/webpack",
-            repo: "github.com/cocreatejs/CoCreate-webpack.git",
+            repo: "github.com/CoCreateJS/Webpack.git",
             exclude: [
                 "fs/webpack"
             ]

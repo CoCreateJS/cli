@@ -71,10 +71,10 @@ module.exports = {
 	repositories: [
 		{
 			// Relative path to the repository
-			path: "./CoCreateJS",
+			path: "./CoCreate-client",
 			
 			// Git repository URL
-			repo: "github.com/CoCreateJS/CoCreateJS.git",
+			repo: "github.com/CoCreateJS/CoCreate-client.git",
 			
 			// Optional: exclude command types from running on this repository
 			// These are COMMAND TYPES to exclude, not file patterns

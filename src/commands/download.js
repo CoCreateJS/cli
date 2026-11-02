@@ -1,4 +1,4 @@
-const file = require("@cocreate/file");
+const file = require("@cocreate/file/node");
 const path = require("path");
 const fs = require("fs");
 const { getConfig } = require("../getConfig");
