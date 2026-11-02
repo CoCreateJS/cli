@@ -496,14 +496,6 @@ module.exports = {
         }
     },
     "plugins": {
-        "ai": {
-            "import": "@cocreate/ai",
-            "path": "../../CoCreate-plugins/server-ai",
-            "repo": "github.com/frankpagan/CoCreate-server-ai.git",
-            "exclude": [
-                "fs/webpack"
-            ]
-        },
         "rollup": {
             "import": "@cocreate/rollup",
             "path": "../../CoCreate-plugins/rollup",

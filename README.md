@@ -42,8 +42,9 @@ configured module and plugin's `src` directory, and skips entries with
 directory. `coc docs` then writes an index and one page per configured module.
 `coc docs --json` prints the structured dataset: `{ type, schemaVersion,
 errors, modules }`. Each module contains its metadata, JSDoc `doclets`, and
-separate `api` and `declarative` arrays. Doclets tagged with `@attribute`
-are declarative; the rest are API records. The deprecated
+separate `api` and `declarative` arrays. Doclets with `kind: "attribute"`
+are declarative; the rest are API records. Source comments use
+`@kind attribute`. The deprecated
 `package.json:cocreate.interface` field is not read.
 
 `coc interface` returns these Docs module records as JSON. Use `--api` or

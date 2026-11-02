@@ -7,12 +7,6 @@ const supportedFlags = new Set([
 	"--server"
 ]);
 
-function hasTag(doclet, name) {
-	return (Array.isArray(doclet.tags) ? doclet.tags : []).some((tag) =>
-		String(tag.title || tag.originalTitle || "").toLowerCase() === name
-	);
-}
-
 function getEnvironment(doclet, fallback) {
 	const tag = (Array.isArray(doclet.tags) ? doclet.tags : []).find((item) =>
 		String(item.title || item.originalTitle || "").toLowerCase() === "environment"
@@ -37,10 +31,10 @@ function selectModule(module, section, selectedEnvironments) {
 	const doclets = Array.isArray(module.doclets) ? module.doclets : [];
 	const api = Array.isArray(module.api)
 		? module.api
-		: doclets.filter((doclet) => !hasTag(doclet, "attribute"));
+		: doclets.filter((doclet) => doclet.kind !== "attribute");
 	const declarative = Array.isArray(module.declarative)
 		? module.declarative
-		: doclets.filter((doclet) => hasTag(doclet, "attribute"));
+		: doclets.filter((doclet) => doclet.kind === "attribute");
 	const byEnvironments = (entries) => entries.filter((doclet) =>
 		environments.some((environment) =>
 			getEnvironment(doclet, moduleEnvironments).includes(environment)
