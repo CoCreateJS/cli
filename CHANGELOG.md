@@ -1,3 +1,44 @@
+# [1.57.0](https://github.com/CoCreateJS/cli/compare/v1.56.4...v1.57.0) (2026-11-02)
+
+
+### Bug Fixes
+
+* add Deno specific entries to .gitignore ([c3804c6](https://github.com/CoCreateJS/cli/commit/c3804c697539d8c3774e5928482cebc8bf44aa3d))
+* bump [@cocreate](https://github.com/cocreate) dependencies ([97e7cd6](https://github.com/CoCreateJS/cli/commit/97e7cd606efcb04be05ff8ca136e48232ee3f229))
+* bump versions ([ba24de4](https://github.com/CoCreateJS/cli/commit/ba24de4961c1464e41afa4db7d219bc480b86599))
+* bump versions ([98642b4](https://github.com/CoCreateJS/cli/commit/98642b48628d4bbe5caa82c34e22a84d62eef2cd))
+* bumped dependencies ([b38c7a0](https://github.com/CoCreateJS/cli/commit/b38c7a0fc903179aab23102b1e708ef905d3e756))
+* make polyrepo linking package-manager aware ([38d6b4b](https://github.com/CoCreateJS/cli/commit/38d6b4b5e3e8f40e365a0d1fc9bae79cb91fe4af))
+* remove deprecated CoCreate UUID dependency and configuration ([13816a7](https://github.com/CoCreateJS/cli/commit/13816a7ed53a868f5266234d262587ec95cea5b5))
+* remove node_modules symlink ([210d23c](https://github.com/CoCreateJS/cli/commit/210d23c50d06098fd478eb5300abbdfb8844b25b))
+* remove trailing slash from node_modules entry in .gitignore ([6c7ea52](https://github.com/CoCreateJS/cli/commit/6c7ea5248458e9ea2ead3edb8ebd91e03dfae5d4))
+* replace legacy $filter field with filter ([24aaa2b](https://github.com/CoCreateJS/cli/commit/24aaa2bece551429b1a8c2a7f87e9520b0558dd4))
+* update config function calls to use request method ([ce13fa3](https://github.com/CoCreateJS/cli/commit/ce13fa320410ac3fa4909f335125dd76b13e93a6))
+* update Config method calls to use prompt instead of request ([52258c6](https://github.com/CoCreateJS/cli/commit/52258c6635fb021304bafe3e9ac79647a7e72519))
+* update git url ([304b29a](https://github.com/CoCreateJS/cli/commit/304b29ad379dc45879bf8354778b76f268a4f142))
+* update git urls ([5207764](https://github.com/CoCreateJS/cli/commit/5207764cea8f9757904c120d25db1860ee052a7d))
+* update GitHub Actions to use latest versions and sync package.json description ([da9ef27](https://github.com/CoCreateJS/cli/commit/da9ef27b1e9e655741a8214a21bafec94ac7d209))
+
+
+### Features
+
+* add interface command ([58fe36b](https://github.com/CoCreateJS/cli/commit/58fe36b7ab6382f5acf7bb9b1dcb72fefc22c857))
+* add reusable project template command ([60b55e4](https://github.com/CoCreateJS/cli/commit/60b55e444fdb2ba84e231e8715c293b9432d97fa))
+* add socket send and recursive download commands ([16a7ef4](https://github.com/CoCreateJS/cli/commit/16a7ef41414b5857ab0577bba49ab375ca8f8d00))
+* add symlink command for managing node_modules links ([1283be9](https://github.com/CoCreateJS/cli/commit/1283be9d838afdac5392c8f386f9d587cf624710))
+* bump all dependencies ([6683ebd](https://github.com/CoCreateJS/cli/commit/6683ebd1a0d3483b06245a21ce518f561882b796))
+* bumped all dependency versions ([7921598](https://github.com/CoCreateJS/cli/commit/7921598ca931c916ed9e14c69fb53ad16664b242))
+* **cli:** add configurable documentation generation ([7360b30](https://github.com/CoCreateJS/cli/commit/7360b309e041cf725bd263e523323a5b2ffeebc5))
+* enable watching for config file changes during upload ([697ebd8](https://github.com/CoCreateJS/cli/commit/697ebd8bce2841044dd5b8dfef9ad9546933c30f))
+* enhance getTargetNodeModulesPath and buildWorkspaceMap functions for improved dependency linking ([8b3940c](https://github.com/CoCreateJS/cli/commit/8b3940c1939ce33855ff61b175e747e0094a8c0c))
+* enhance linkRepoAndDependencies function with improved logging and stats tracking ([e6b2425](https://github.com/CoCreateJS/cli/commit/e6b2425b6634f52f86f49b183ac1b92b3c594f5a))
+* implement storage management functionality with file watching ([053d42b](https://github.com/CoCreateJS/cli/commit/053d42be37e413381e742e26dccda6d4af2b65da))
+* refactor translation module for improved structure and error handling ([86101b5](https://github.com/CoCreateJS/cli/commit/86101b5f4d8028ca590bf58e5a0b21be6bb76eea))
+* rename admin to app in CoCreate.config.js for clarity ([66b8077](https://github.com/CoCreateJS/cli/commit/66b80779385abecf1943ac3908a420f7266ac47e))
+* Replace acme with certificates ([5593446](https://github.com/CoCreateJS/cli/commit/5593446ac52c5d1bfcf3475facc63205f964c388))
+* restructure repositories in CoCreate.config.js for improved organization ([9bdb90b](https://github.com/CoCreateJS/cli/commit/9bdb90b003a0c491091915f000a0d4617c565b52))
+* update @google/genai dependency to version 2.15.0 ([5e93ad2](https://github.com/CoCreateJS/cli/commit/5e93ad23eb50d09319ce3506ab41a909820e5298))
+
 ## [1.56.4](https://github.com/CoCreateJS/CoCreate-cli/compare/v1.56.3...v1.56.4) (2026-07-19)
 
 
