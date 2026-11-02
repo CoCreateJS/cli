@@ -25,29 +25,13 @@ module.exports = async function execute(command, config, sourceConfig = config) 
     let repositories = [];
 
     // --- CONSOLIDATE REPOSITORIES ---
-    // Merge both modules and projects from the new configuration structure
+    // Merge repositories from the grouped configuration structure
     let targetRepos = [];
-    
-    if (config.modules) {
-        Object.entries(config.modules).forEach(([name, repo]) => {
-            // Ensure it's a valid object and has a path
-            if (typeof repo === 'object' && repo !== null && repo.path) {
-                targetRepos.push({ name, ...repo });
-            }
-        });
-    }
 
-    if (config.plugins) {
-        Object.entries(config.plugins).forEach(([name, repo]) => {
-            if (typeof repo === 'object' && repo !== null && repo.path) {
-                targetRepos.push({ name, ...repo });
-            }
-        });
-    }
-    
-    if (config.projects) {
-        Object.entries(config.projects).forEach(([name, repo]) => {
-            if (typeof repo === 'object' && repo !== null && repo.path) {
+    for (const group of ["modules", "storages", "plugins", "projects"]) {
+        if (!config[group]) continue;
+        Object.entries(config[group]).forEach(([name, repo]) => {
+            if (typeof repo === "object" && repo !== null && repo.path) {
                 targetRepos.push({ name, ...repo });
             }
         });

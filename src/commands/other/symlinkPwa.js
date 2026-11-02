@@ -35,17 +35,13 @@ function createSymlink(dir, dest, option) {
 
 
 symlink('./dist/service-worker.js', '../../service-worker.js', 'file')
-// symlink('./dist/service-worker.js', '../../CoCreate-admin/src/service-worker.js', 'file')
-// symlink('./dist/service-worker.js', '../../CoCreate-website/src/service-worker.js', 'file')
+// symlink('./dist/service-worker.js', '../../CoCreate-app/src/service-worker.js', 'file')
 
 symlink('./demo/offline.html', '../../offline.html', 'file')
-// symlink('./demo/offline.html', '../../CoCreate-admin/src/offline.html', 'file')
-// symlink('./demo/offline.html', '../../CoCreate-website/src/offline.html', 'file')
+// symlink('./demo/offline.html', '../../CoCreate-app/src/offline.html', 'file')
 
 symlink('./demo/manifest.webmanifest', '../../manifest.webmanifest', 'file')
-// symlink('./demo/manifest.webmanifest', '../../CoCreate-admin/src/manifest.webmanifest', 'file')
-// symlink('./demo/manifest.webmanifest', '../../CoCreate-website/src/manifest.webmanifest', 'file')
+// symlink('./demo/manifest.webmanifest', '../../CoCreate-app/src/manifest.webmanifest', 'file')
 
 // symlink('./demo/manifest-assets', '../../manifest-assets', 'dir')
-// symlink('./demo/manifest-assets', '../../CoCreate-admin/manifest-assets', 'dir')
-// symlink('./demo/manifest-assets', '../../CoCreate-website/manifest-assets', 'dir')
+// symlink('./demo/manifest-assets', '../../CoCreate-app/manifest-assets', 'dir')

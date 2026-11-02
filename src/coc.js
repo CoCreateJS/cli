@@ -57,7 +57,7 @@ async function main(config = {}, options, sourceConfigSnapshot) {
     let directory = options["directory"] || process.cwd();
     
     // Check if any repository targets exist in the configuration
-    if (!config.repositories && !config.modules && !config.plugins && !config.projects) {
+    if (!config.repositories && !config.modules && !config.storages && !config.plugins && !config.projects) {
         let configString = options["config"];
         if (configString) {
             try {
@@ -168,6 +168,14 @@ async function main(config = {}, options, sourceConfigSnapshot) {
         }
     }
 
+    // Add metadata to storage repositories
+    if (config.storages) {
+        const storageRepos = Object.values(config.storages).filter(r => typeof r === 'object' && r !== null && r.path);
+        if (storageRepos.length) {
+            await addMeta(storageRepos, [], directory);
+        }
+    }
+
     // Add metadata to plugins with a local repository path
     if (config.plugins) {
         const pluginRepos = Object.values(config.plugins).filter(r => typeof r === 'object' && r !== null && r.path);
@@ -225,12 +233,14 @@ async function promptRetry(failed, config, options, sourceConfig) {
                 const retrySourceConfig = cloneConfig(sourceConfig);
                 retrySourceConfig.repositories = cloneConfig(failed);
                 delete retrySourceConfig.modules;
+                delete retrySourceConfig.storages;
                 delete retrySourceConfig.plugins;
                 delete retrySourceConfig.projects;
 
-                // Ensure we only retry the failed ones by clearing existing modules/plugins/projects
+                // Ensure we only retry the failed ones by clearing existing groups
                 config.repositories = failed;
                 delete config.modules;
+                delete config.storages;
                 delete config.plugins;
                 delete config.projects;
                 await main(config, options, retrySourceConfig);

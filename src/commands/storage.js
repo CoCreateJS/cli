@@ -20,36 +20,34 @@ module.exports = async function storage(directory, args) {
 
 	const config = await getConfig(cwd);
 
-	if (!config || !config.modules) {
+	if (!config || (!config.storages && !config.modules)) {
 		console.error("Failed to read or parse CoCreate.config.js.");
 		return;
 	}
 
 	const storages = [];
 
-	for (const module of Object.values(config.modules)) {
-		if (!module.path) continue;
-
-		const normalizedPath = path.normalize(module.path);
-
-		// Only process storage repositories
-		if (
-			!normalizedPath.includes(
+	const configuredStorages = config.storages
+		? Object.entries(config.storages)
+		: Object.entries(config.modules || {}).filter(([, module]) => {
+			if (!module?.path) return false;
+			return path.normalize(module.path).includes(
 				`${path.sep}CoCreate-storages${path.sep}`
-			)
-		)
-			continue;
+			);
+		});
 
-		// Repository name (ex: CoCreate-mongodb)
-		const repositoryName = path.basename(normalizedPath);
+	for (const [name, repository] of configuredStorages) {
+		if (!repository?.path) continue;
 
-		// Storage name (ex: mongodb)
-		const storageName = repositoryName.replace(/^CoCreate-/, "");
+		// Legacy configs infer storage names from the repository directory.
+		const storageName = config.storages
+			? name
+			: path.basename(path.normalize(repository.path)).replace(/^CoCreate-/, "");
 
 		storages.push({
 			name: storageName,
 			storageSource: path.resolve(
-				module.path,
+				repository.path,
 				"dist",
 				`${storageName}.js`
 			),

@@ -31,17 +31,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cocreatejs/CoCreate-cli.git"
+    "url": "git+https://github.com/CoCreateJS/cli.git"
   },
   "author": "CoCreate LLC",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/CoCreateJS/CoCreate-cli/issues"
+    "url": "https://github.com/CoCreateJS/cli/issues"
   },
   "homepage": "https://CoCreateJS.com/docs/cli",
   "funding": {
     "type": "GitHub Sponsors ❤",
-    "url": "https://github.com/sponsors/CoCreate-app"
+    "url": "https://github.com/sponsors/CoCreateJS"
   },
   "main": "src/commands/index.js",
   "bin": {

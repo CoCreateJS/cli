@@ -16,6 +16,7 @@ function getEntries(config = {}) {
     };
 
     addGroup(config.modules, "module");
+    addGroup(config.storages, "storage");
     addGroup(config.plugins, "plugin");
 
     if (Array.isArray(config.repositories)) {
@@ -29,7 +30,7 @@ function getEntries(config = {}) {
         });
     }
 
-    // Projects are useful as the source when a config has no module/plugin
+    // Projects are useful as the source when a config has no module, storage, or plugin
     // collection, while a workspace with modules documents those by default.
     if (!entries.length) addGroup(config.projects, "project");
 
@@ -171,7 +172,7 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
     const data = await collectDocumentation(repositories, config, CoCreateDocs, (event) => {
         if (event.phase === "parse-start") {
             logProgress(
-                `[docs] Parsing JSDoc for ${event.total} module page(s) from ${event.sourceDirectory}/.`
+                `[docs] Parsing JSDoc for ${event.total} documentation target(s) from ${event.sourceDirectory}/.`
             );
         } else if (event.phase === "parse-page") {
             logProgress(`[docs] Parsing ${event.current}/${event.total}: ${event.name}`);
@@ -212,7 +213,7 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
             0
         );
         console.log(
-            `[docs] Parsed ${count} documented symbols across ${data.modules.length} module(s).`
+            `[docs] Parsed ${count} documented symbols across ${data.modules.length} target(s).`
         );
         if (diagnosticCount) {
             console.warn(`[docs] JSDoc reported ${diagnosticCount} tag/parser diagnostic(s).`);

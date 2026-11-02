@@ -52,6 +52,15 @@ module.exports = {
 		// }
 	},
 
+	// Storage repositories managed by `coc` and consumed by `coc storage`
+	// Keep adapters separate from general-purpose modules for workspace organization.
+	storages: {
+		// "storage-name": {
+		// 	path: "../CoCreate-storages/storage-name",
+		// 	repo: "github.com/CoCreateJS/storage-name.git"
+		// }
+	},
+
 	// Plugin whitelist - add any plugins you use in your application
 	// Just whitelisting them here enables dynamic plugin loading from HTML
 	plugins: {

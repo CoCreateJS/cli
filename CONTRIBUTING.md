@@ -1,19 +1,19 @@
 # Contributing to CoCreate-cli
 
-This project is work of [many contributors](https://github.com/CoCreateJS/CoCreate-cli/graphs/contributors).
-You're encouraged to submit [pull requests](https://github.com/CoCreateJS/CoCreate-cli/pulls),
-[propose features and discuss issues](https://github.com/CoCreateJS/CoCreate-cli/issues).
+This project is work of [many contributors](https://github.com/CoCreateJS/cli/graphs/contributors).
+You're encouraged to submit [pull requests](https://github.com/CoCreateJS/cli/pulls),
+[propose features and discuss issues](https://github.com/CoCreateJS/cli/issues).
 
 In the examples below, substitute your Github username for `contributor` in URLs.
 
 ## Fork the Project
 
-Fork the [project on Github](https://github.com/CoCreateJS/CoCreate-cli) and check out your copy.
+Fork the [project on Github](https://github.com/CoCreateJS/cli) and check out your copy.
 
 ```
 git clone https://github.com/contributor/CoCreate-cli.git
 cd CoCreate-cli
-git remote add upstream https://github.com/cocreatejs/CoCreate-cli.git
+git remote add upstream https://github.com/CoCreateJS/cli.git
 ```
 
 ## Create a Topic Branch
@@ -75,7 +75,7 @@ git push origin my-feature-branch
 
 ## Make a Pull Request
 
-Go to [https://github.com/CoCreateJS/CoCreate-cli](https://github.com/CoCreateJS/CoCreate-cli) and select your feature branch.
+Go to [https://github.com/CoCreateJS/cli](https://github.com/CoCreateJS/cli) and select your feature branch.
 Click the 'Pull Request' button and fill out the form. Pull requests are usually reviewed within a few days.
 
 ## Rebase
