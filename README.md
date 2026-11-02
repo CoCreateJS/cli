@@ -41,7 +41,15 @@ configured module and plugin's `src` directory, and skips entries with
 `index.html` and `page.html`, and `documentation.output` to the destination
 directory. `coc docs` then writes an index and one page per configured module.
 `coc docs --json` prints the structured dataset: `{ type, schemaVersion,
-errors, modules }`. Each module contains its metadata and JSDoc doclets.
+errors, modules }`. Each module contains its metadata, JSDoc `doclets`, and
+separate `api` and `declarative` arrays. Doclets tagged with `@attribute`
+are declarative; the rest are API records. The deprecated
+`package.json:cocreate.interface` field is not read.
+
+`coc interface` returns these Docs module records as JSON. Use `--api` or
+`--declarative` to select one collection, and `--client` or `--server` to
+filter modules and doclets by their `@environment` tags. Without environment
+flags, both environments are included.
 
 # Table of Contents
 

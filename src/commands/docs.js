@@ -128,16 +128,35 @@ async function collectDocumentation(
 
         try {
             const diagnostics = [];
+            let packageJson = {};
+            try {
+                packageJson = JSON.parse(
+                    fs.readFileSync(path.join(repo.absolutePath, "package.json"), "utf8")
+                );
+            } catch {}
             const doclets = parseJSDoc(sourcePath, {
                 cwd: repo.absolutePath,
                 recurse: true,
                 private: documentationConfig.private === true,
                 onDiagnostic: (diagnostic) => diagnostics.push(diagnostic)
             });
+            const moduleDoclet = doclets.find((doclet) => doclet.kind === "module");
+            const environmentTag = moduleDoclet?.tags?.find((tag) =>
+                String(tag.title || tag.originalTitle || "").toLowerCase() === "environment"
+            );
+            const declaredEnvironment = environmentTag
+                ? String(environmentTag.value || "")
+                    .split(/[\s,|]+/)
+                    .map((value) => value.toLowerCase())
+                    .filter((value) => value === "client" || value === "server")
+                : [];
             modules.push({
                 name: repo.name,
-                packageName: repo.packageName || null,
+                packageName: repo.packageName || packageJson.name || null,
                 type: repo.type,
+                environment: declaredEnvironment.length
+                    ? declaredEnvironment
+                    : ["client", "server"],
                 sourceDirectory,
                 doclets,
                 diagnostics

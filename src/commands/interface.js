@@ -1,5 +1,4 @@
-const fs = require("fs");
-const path = require("path");
+const { collectDocumentation } = require("./docs");
 
 const supportedFlags = new Set([
 	"--api",
@@ -8,44 +7,62 @@ const supportedFlags = new Set([
 	"--server"
 ]);
 
-function filterInterface(contract, section, environments) {
-	const output = {};
-	for (const key of ["schemaVersion", "summary", "source", "sources", "status"]) {
-		if (contract[key] !== undefined) output[key] = contract[key];
-	}
+function hasTag(doclet, name) {
+	return (Array.isArray(doclet.tags) ? doclet.tags : []).some((tag) =>
+		String(tag.title || tag.originalTitle || "").toLowerCase() === name
+	);
+}
 
-	const hasEnvironmentBranches = Boolean(contract.client || contract.server);
-	if (hasEnvironmentBranches) {
-		for (const environment of environments) {
-			const branch = contract[environment];
-			if (!branch) continue;
-			const filteredBranch = {};
-			for (const key of ["source", "sources", "summary", "status"]) {
-				if (branch[key] !== undefined) filteredBranch[key] = branch[key];
-			}
-			if (section) {
-				if (branch[section] !== undefined) filteredBranch[section] = branch[section];
-			} else {
-				for (const key of ["declarative", "api"]) {
-					if (branch[key] !== undefined) filteredBranch[key] = branch[key];
-				}
-			}
-			output[environment] = filteredBranch;
-		}
-		return output;
-	}
+function getEnvironment(doclet, fallback) {
+	const tag = (Array.isArray(doclet.tags) ? doclet.tags : []).find((item) =>
+		String(item.title || item.originalTitle || "").toLowerCase() === "environment"
+	);
+	if (!tag) return fallback;
+	const values = String(tag.value || "")
+		.split(/[\s,|]+/)
+		.map((value) => value.toLowerCase())
+		.filter((value) => value === "client" || value === "server");
+	return values.length ? values : fallback;
+}
+
+function selectModule(module, section, selectedEnvironments) {
+	const moduleEnvironments = Array.isArray(module.environment) && module.environment.length
+		? module.environment
+		: ["client", "server"];
+	const environments = selectedEnvironments.filter((environment) =>
+		moduleEnvironments.includes(environment)
+	);
+	if (!environments.length) return null;
+
+	const doclets = Array.isArray(module.doclets) ? module.doclets : [];
+	const api = Array.isArray(module.api)
+		? module.api
+		: doclets.filter((doclet) => !hasTag(doclet, "attribute"));
+	const declarative = Array.isArray(module.declarative)
+		? module.declarative
+		: doclets.filter((doclet) => hasTag(doclet, "attribute"));
+	const byEnvironments = (entries) => entries.filter((doclet) =>
+		environments.some((environment) =>
+			getEnvironment(doclet, moduleEnvironments).includes(environment)
+		)
+	);
+	const output = {
+		name: module.name,
+		packageName: module.packageName || null,
+		type: module.type,
+		environment: environments
+	};
 
 	if (section) {
-		if (contract[section] !== undefined) output[section] = contract[section];
+		output[section] = byEnvironments(section === "api" ? api : declarative);
 	} else {
-		for (const key of ["declarative", "api"]) {
-			if (contract[key] !== undefined) output[key] = contract[key];
-		}
+		output.api = byEnvironments(api);
+		output.declarative = byEnvironments(declarative);
 	}
 	return output;
 }
 
-module.exports = async function interfaceCommand(repos = [], args = []) {
+module.exports = async function interfaceCommand(repos = [], args = [], config = {}) {
 	const flags = new Set(args);
 	const unknownFlags = args.filter((arg) => arg.startsWith("-") && !supportedFlags.has(arg));
 	const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
@@ -65,51 +82,19 @@ module.exports = async function interfaceCommand(repos = [], args = []) {
 
 	const section = flags.has("--api")
 		? "api"
-		: flags.has("--declarative")
-			? "declarative"
-			: null;
-	const environments = ["client", "server"].filter((environment) =>
+		: flags.has("--declarative") ? "declarative" : null;
+	const selectedEnvironments = ["client", "server"].filter((environment) =>
 		flags.has(`--${environment}`)
 	);
-	const selectedEnvironments = environments.length ? environments : ["client", "server"];
-	const interfaces = [];
-	const seen = new Set();
-
-	for (const repo of repos) {
-		const repoPath = repo.absolutePath || (repo.path && path.resolve(repo.path));
-		if (!repoPath) continue;
-
-		const packageJsonPath = path.join(repoPath, "package.json");
-		if (!fs.existsSync(packageJsonPath)) continue;
-
-		let pkg;
-		try {
-			pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-		} catch (error) {
-			console.error(`Unable to read ${packageJsonPath}: ${error.message}`);
-			continue;
-		}
-
-		const contract = pkg.cocreate?.interface;
-		if (!contract) continue;
-
-		const environment = Array.isArray(pkg.cocreate.environment)
-			? pkg.cocreate.environment
-			: ["client", "server"];
-		const matchingEnvironments = selectedEnvironments.filter((name) => environment.includes(name));
-		if (!matchingEnvironments.length) continue;
-
-		const identity = pkg.name || repo.packageName || repo.name || repoPath;
-		if (seen.has(identity)) continue;
-		seen.add(identity);
-
-		interfaces.push({
-			name: identity,
-			version: pkg.version,
-			environment: matchingEnvironments,
-			interface: filterInterface(contract, section, matchingEnvironments)
-		});
-	}
-
+	const dataset = await collectDocumentation(repos, config);
+	const interfaces = dataset.modules
+		.map((module) => selectModule(
+			module,
+			section,
+			selectedEnvironments.length ? selectedEnvironments : ["client", "server"]
+		))
+		.filter(Boolean);
 	console.log(JSON.stringify(interfaces, null, 2));
 };
+
+module.exports.selectModule = selectModule;
