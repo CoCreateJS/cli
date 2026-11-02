@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/CoCreateJS/cli/compare/v1.57.0...v2.0.0) (2026-11-02)
+
+
+### Features
+
+* classify the CLI configuration migration as breaking ([379f0ab](https://github.com/CoCreateJS/cli/commit/379f0ab306e01064d6fcbd4df393a5499de1fbc4))
+
+
+### BREAKING CHANGES
+
+* Existing CLI configuration must use the renamed module and repository identities introduced by the CoCreate Client and Server migration.
+
 # [1.57.0](https://github.com/CoCreateJS/cli/compare/v1.56.4...v1.57.0) (2026-11-02)
 
 
