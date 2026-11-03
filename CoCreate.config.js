@@ -153,10 +153,6 @@ module.exports = {
             "path": "../editor",
             "repo": "github.com/CoCreateJS/editor.git"
         },
-        "element-config": {
-            "path": "../element-config",
-            "repo": "github.com/CoCreateJS/element-config.git"
-        },
         "element-prototype": {
             "path": "../element-prototype",
             "repo": "github.com/CoCreateJS/element-prototype.git"
