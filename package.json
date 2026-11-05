@@ -49,11 +49,11 @@
   },
   "dependencies": {
     "@cocreate/certificates": "^1.11.0",
-    "@cocreate/config": "^1.21.0",
-    "@cocreate/docs": "^1.24.0",
-    "@cocreate/file": "^1.25.0",
-    "@cocreate/socket-client": "^1.43.0",
-    "@cocreate/utils": "^1.57.0",
+    "@cocreate/config": "^2.0.0",
+    "@cocreate/docs": "^2.0.0",
+    "@cocreate/file": "^2.0.0",
+    "@cocreate/socket-client": "^2.0.0",
+    "@cocreate/utils": "^2.0.0",
     "@google/genai": "2.15.0"
   }
 }
