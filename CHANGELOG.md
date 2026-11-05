@@ -1,3 +1,16 @@
+# [2.1.0](https://github.com/CoCreateJS/cli/compare/v2.0.0...v2.1.0) (2026-11-05)
+
+
+### Bug Fixes
+
+* upgrade CoCreate dependencies to v2 ([bef6793](https://github.com/CoCreateJS/cli/commit/bef67935076515a3e296ed065451295b2c66f106))
+
+
+### Features
+
+* add clean option to template command ([c53a9e8](https://github.com/CoCreateJS/cli/commit/c53a9e8df3fa05816b254c32ad9eaa203745d64e))
+* generate interface output from JSDoc ([e69c703](https://github.com/CoCreateJS/cli/commit/e69c7030c50fd461add49f508a847c08ed3faa04))
+
 # [2.0.0](https://github.com/CoCreateJS/cli/compare/v1.57.0...v2.0.0) (2026-11-02)
 
 
