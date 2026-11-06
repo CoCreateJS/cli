@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const { createRequire } = require('node:module');
 const test = require('node:test');
-const { Server: WebSocketServer } = createRequire(require.resolve('@cocreate/socket-client'))('ws');
+const { Server: WebSocketServer } = createRequire(require.resolve('@cocreate/socket'))('ws');
 const exec = promisify(execFile);
 const cli = path.resolve(__dirname, '../src/coc.js');
 

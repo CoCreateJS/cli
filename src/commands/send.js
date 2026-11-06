@@ -51,9 +51,9 @@ module.exports = async function send(directory, args = []) {
         }
         if (!payload.method) throw new Error("The envelope requires a method.");
 
-        const [{ default: Config }, { default: socket }] = await Promise.all([
+        const [{ default: Config }, { SocketClient: socket }] = await Promise.all([
             import("@cocreate/config"),
-            import("@cocreate/socket-client")
+            import("@cocreate/socket")
         ]);
         await socket.init();
         const connection = await Config.prompt(

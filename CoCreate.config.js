@@ -256,9 +256,9 @@ module.exports = {
             "path": "../socket-client",
             "repo": "github.com/CoCreateJS/socket-client.git"
         },
-        "socket-server": {
-            "path": "../socket-server",
-            "repo": "github.com/CoCreateJS/socket-server.git",
+        "socket": {
+            "path": "../socket",
+            "repo": "github.com/CoCreateJS/socket.git",
             "exclude": [
                 "fs/webpack"
             ]
