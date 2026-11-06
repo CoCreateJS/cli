@@ -158,9 +158,7 @@ export async function executeEndpoint(data) {
         const response = await makeHttpRequest(url, options);
         data[name] = await response.json();
 
-        if (wsManager) {
-            server.send(data);
-        }
+        server.send(data);
     } catch (error) {
         data.error = error.message;
         if (error.response) {
@@ -179,9 +177,7 @@ export async function executeEndpoint(data) {
                 })
             );
         }
-        if (data.socket && server?.send) {
-            server.send(data);
-        }
+        server.send(data);
     }
 }
 
@@ -312,7 +308,7 @@ export async function executeScriptWithTimeout(name, data) {
             } else return;
         }
 
-        if (data.socket && server?.send) server.send(data);
+        server.send(data);
 
         if (modulesList[name].unload === false || modulesList[name].unload === "false") {
             return;
@@ -343,7 +339,7 @@ export async function executeScriptWithTimeout(name, data) {
             data.res.writeHead(400, { "Content-Type": "text/plain" });
             data.res.end(`Lazyload Error: ${error.message}`);
         }
-        if (data.socket && server?.send) server.send(data);
+        server.send(data);
     }
 }
 
