@@ -159,7 +159,7 @@ export async function executeEndpoint(data) {
         data[name] = await response.json();
 
         if (wsManager) {
-            wsManager.send(data);
+            server.send(data);
         }
     } catch (error) {
         data.error = error.message;
@@ -179,8 +179,8 @@ export async function executeEndpoint(data) {
                 })
             );
         }
-        if (data.socket && wsManager) {
-            wsManager.send(data);
+        if (data.socket && server?.send) {
+            server.send(data);
         }
     }
 }
@@ -312,7 +312,7 @@ export async function executeScriptWithTimeout(name, data) {
             } else return;
         }
 
-        if (data.socket && wsManager) wsManager.send(data);
+        if (data.socket && server?.send) server.send(data);
 
         if (modulesList[name].unload === false || modulesList[name].unload === "false") {
             return;
@@ -343,7 +343,7 @@ export async function executeScriptWithTimeout(name, data) {
             data.res.writeHead(400, { "Content-Type": "text/plain" });
             data.res.end(`Lazyload Error: ${error.message}`);
         }
-        if (data.socket && wsManager) wsManager.send(data);
+        if (data.socket && server?.send) server.send(data);
     }
 }
 
@@ -582,7 +582,7 @@ export async function processOperator(data, event, operator, context) {
         return results;
     } else if (operator.startsWith("$socket")) {
         context = await processOperators(data, event, context);
-        result = await wsManager.send(context);
+        result = await server.send(context);
         if (operator.startsWith("$socket.")) {
             result = getValueFromObject(operator, operator.substring(6));
         }
