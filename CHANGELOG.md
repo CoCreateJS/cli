@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/CoCreateJS/cli/compare/v2.1.0...v2.1.1) (2026-11-07)
+
+
+### Bug Fixes
+
+* complete unified socket package migration ([d73b332](https://github.com/CoCreateJS/cli/commit/d73b332ac845b027b918ac0daa36590246bd5651))
+* route component responses through unified server send ([44c25ef](https://github.com/CoCreateJS/cli/commit/44c25efeefd16763115c4cfea191dbe91e150f5a))
+* route lazy loader responses through server send ([2128651](https://github.com/CoCreateJS/cli/commit/212865130835c9d3f0abaef54c0f50ccafd9cbb1))
+
 # [2.1.0](https://github.com/CoCreateJS/cli/compare/v2.0.0...v2.1.0) (2026-11-05)
 
 
