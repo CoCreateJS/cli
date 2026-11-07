@@ -119,12 +119,8 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "crud-client": {
-            "path": "../crud-client",
-            "repo": "github.com/CoCreateJS/crud-client.git"
-        },
-        "crud-server": {
-            "path": "../crud-server",
+        "crud": {
+            "path": "../crud",
             "repo": "github.com/CoCreateJS/crud-server.git",
             "exclude": [
                 "fs/webpack"
