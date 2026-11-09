@@ -34,7 +34,6 @@ import { getValueFromObject, objectToSearchParams } from '@cocreate/utils';
 const require = createRequire(import.meta.url);
 
 let server = null;
-let wsManager = null;
 let crud = null;
 const exclusion = { ...require.cache };
 const scriptsDirectory = "./scripts";
@@ -48,7 +47,6 @@ let modulesList = {};
  */
 export async function init(Server) {
     server = Server;
-    wsManager = server.wsManager;
     crud = server.crud;
 
     try {
@@ -58,7 +56,7 @@ export async function init(Server) {
         throw error;
     }
     
-    wsManager.on("endpoint", (data) => {
+    server.on("endpoint", (data) => {
         executeEndpoint(data);
     });
 
@@ -114,7 +112,7 @@ export async function request(req, res) {
 
 /**
  * Executes external dynamic API Gateway endpoints.
- * Now cleanly decoupled to be invoked by the central Socket Manager (wsManager) routing matrix.
+ * Now cleanly decoupled to be invoked by the central socket routing matrix.
  */
 export async function executeEndpoint(data) {
     try {
