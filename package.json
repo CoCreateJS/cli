@@ -54,6 +54,7 @@
     "@cocreate/file": "^2.0.1",
     "@cocreate/utils": "^2.0.2",
     "@google/genai": "2.15.0",
-    "@cocreate/socket": "^3.0.0"
+    "@cocreate/socket": "^3.0.0",
+    "@cocreate/crud": "^2.0.4"
   }
 }

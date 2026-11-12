@@ -28,6 +28,7 @@ const availableOptions = {
 
 const options = {};
 const commandParts = [];
+const commandArguments = [];
 for (let i = 0; i < argv.length; i++) {
     let option = availableOptions[argv[i]];
     if (option) {
@@ -38,6 +39,7 @@ for (let i = 0; i < argv.length; i++) {
             argv.splice(i + 1, 1);
         }
     } else {
+        commandArguments.push(argv[i]);
         if (argv[i].match(/[\s'"]/)) {
             commandParts.push(`'${argv[i].replace(/'/g, "\\'")}'`);
         } else {
@@ -193,7 +195,7 @@ async function main(config = {}, options, sourceConfigSnapshot) {
     }
 
     // Execute the command across targeted repositories/modules/projects
-    const failed = await execute(command, config, sourceConfig);
+    const failed = await execute(command, config, sourceConfig, commandArguments);
 
     // Handle any failed command executions
     if (failed && failed.length > 0) {

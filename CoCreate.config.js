@@ -126,6 +126,10 @@ module.exports = {
                 "fs/webpack"
             ]
         },
+        "db": {
+            "path": "../db",
+            "repo": "github.com/CoCreateJS/db.git"
+        },
         "css-parser": {
             "path": "../css-parser",
             "repo": "github.com/CoCreateJS/css-parser.git"

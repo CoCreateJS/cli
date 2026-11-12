@@ -52,6 +52,22 @@ are declarative; the rest are API records. Source comments use
 filter modules and doclets by their `@environment` tags. Without environment
 flags, both environments are included.
 
+## Local CRUD
+
+`coc crud` accepts the same JSON envelope as `coc send` and calls CRUD server
+directly. CRUD server handles storage initialization and routing; the command does
+not open a Socket connection or require an API key or a database directory argument.
+
+```bash
+coc crud '{"method":"object.read","organization_id":"5ff747727005da1c272740ab","database":"dev","array":"keys","filter":{"query":{"admin":true},"limit":1}}'
+```
+
+JSON files and stdin are optional ways to supply that same envelope. Create,
+update, and delete use normal CRUD envelopes too. Results retain CRUD metadata,
+credentials are redacted, and failures exit nonzero. The project configuration can
+supply `organization_id` when the envelope omits it. `coc send` retains its Socket
+behavior and name. Use `coc crud --help` for usage.
+
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
