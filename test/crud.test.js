@@ -10,9 +10,9 @@ const organization_id = '5ff747727005da1c272740ab';
 async function fixture(t) {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), 'coc-crud-'));
     t.after(() => fs.rm(root, { recursive: true, force: true }));
-    await fs.writeFile(path.join(root, 'CoCreate.config.js'), `module.exports = ${JSON.stringify({ organization_id, repositories: [] })}`);
     const directory = path.join(root, 'CoCreateDB');
     await fs.mkdir(directory);
+    await fs.writeFile(path.join(root, 'CoCreate.config.js'), `module.exports = ${JSON.stringify({ organization_id, repositories: [], db: { directory } })}`);
     return { root, directory };
 }
 
@@ -95,9 +95,9 @@ test('environment directory and help work without Socket credentials', async t =
 });
 
 
-test('configured directory resolves relative to config and neither credentials nor config are changed', async t => {
+test('configured DB directory resolves relative to the process directory and config stays unchanged', async t => {
     const { root } = await fixture(t);
-    const config = `module.exports = ${JSON.stringify({ organization_id, repositories: [], crud: { directory: 'local-db' } })}`;
+    const config = `module.exports = ${JSON.stringify({ organization_id, repositories: [], db: { directory: 'local-db' } })}`;
     await fs.writeFile(path.join(root, 'CoCreate.config.js'), config);
     const created = await invoke(root, [], payload('object.create', { object: { name: 'local' } }));
     assert.equal(created.code, 0, created.stderr);
@@ -108,14 +108,15 @@ test('configured directory resolves relative to config and neither credentials n
 });
 
 
-test('an inline envelope uses workspace storage from a nested project directory', async t => {
+test('an inline envelope defaults to the nested process working directory', async t => {
     const { root } = await fixture(t);
     const nested = path.join(root, 'project', 'src');
+    await fs.writeFile(path.join(root, 'CoCreate.config.js'), `module.exports = ${JSON.stringify({ organization_id, repositories: [] })}`);
     await fs.mkdir(nested, { recursive: true });
     const request = payload('object.create', { object: { name: 'shared workspace' } });
     const created = await invoke(nested, [JSON.stringify(request)]);
     assert.equal(created.code, 0, created.stderr);
-    const read = await invoke(root, [], payload('object.read'));
+    const read = await invoke(nested, [], payload('object.read'));
     assert.equal(read.code, 0, read.stderr);
     assert.equal(read.data.object[0].name, 'shared workspace');
 });
@@ -128,12 +129,13 @@ test('the project supplies organization identity for an ordinary CRUD envelope',
     assert.equal(result.data.success, true);
 });
 
-test('standalone service owns its default storage outside a CoCreateDB workspace', async t => {
+test('standalone DB defaults to the process working directory', async t => {
     const { root, directory } = await fixture(t);
     await fs.rename(directory, path.join(root, 'unused'));
+    await fs.writeFile(path.join(root, 'CoCreate.config.js'), `module.exports = ${JSON.stringify({ organization_id, repositories: [] })}`);
     const result = await invoke(root, [], payload('object.create', { object: { name: 'standalone' } }));
     assert.equal(result.code, 0, result.stderr);
-    await fs.access(path.join(root, '.cocreate', 'db'));
+    await fs.access(path.join(root, organization_id));
 });
 
 test('an empty hierarchy bootstraps a key through CRUD with production/app defaults and no Socket credentials', async t => {

@@ -3,7 +3,7 @@ const path = require('node:path');
 
 const usage = `Usage: coc crud [JSON | request.json]
 With no argument, reads the same JSON envelope as coc send from stdin.
-Calls CRUD server using its configured storage, without Socket authorization.`;
+Calls CRUD with CoCreateDB's local directory and persistence config, without Socket authorization.`;
 
 async function readStdin() {
     let input = '';
@@ -40,12 +40,15 @@ module.exports = async function crud(repositories, args = [], projectConfig = {}
         }
         const organization_id = payload.organization_id || projectConfig.organization_id;
         if (typeof organization_id !== 'string' || !organization_id.trim()) throw new Error('An organization_id is required.');
-        const { default: Crud } = await import('@cocreate/crud/server');
+        const [{ default: Crud }, { CoCreateDB }] = await Promise.all([
+            import('@cocreate/crud/server'), import('@cocreate/db')
+        ]);
         const host = typeof payload.host === 'string' ? payload.host :
             typeof projectConfig.host === 'string' ? projectConfig.host : undefined;
+        const db = await CoCreateDB.initLocal({ config: projectConfig, prompt: false });
         const instance = await Crud.init(undefined, { config: {
             ...projectConfig, organization_id, host
-        } });
+        }, db });
         const response = await instance.send({ ...payload, organization_id });
         process.stdout.write(`${stringifyResponse(response)}\n`);
         if (!response || response.success === false ||
