@@ -138,9 +138,9 @@ module.exports = {
             "path": "../cursors",
             "repo": "github.com/CoCreateJS/cursors.git"
         },
-        "device": {
-            "path": "../device",
-            "repo": "github.com/CoCreateJS/device.git"
+        "apps": {
+            "path": "../apps",
+            "repo": "github.com/CoCreateJS/apps.git"
         },
         "docs": {
             "path": "../docs",
