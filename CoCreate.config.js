@@ -23,7 +23,7 @@ module.exports = {
     "projects": {
         "client": {
             "path": "../../client",
-            "repo": "github.com/CoCreateJS/CoCreate-client.git",
+            "repo": "github.com/CoCreateJS/client.git",
             "exclude": [
                 "fs/webpack"
             ]

@@ -83,7 +83,7 @@ module.exports = {
 			path: "./client",
 			
 			// Git repository URL
-			repo: "github.com/CoCreateJS/CoCreate-client.git",
+			repo: "github.com/CoCreateJS/client.git",
 			
 			// Optional: exclude command types from running on this repository
 			// These are COMMAND TYPES to exclude, not file patterns
