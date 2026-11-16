@@ -35,13 +35,13 @@ function createSymlink(dir, dest, option) {
 
 
 symlink('./dist/service-worker.js', '../../service-worker.js', 'file')
-// symlink('./dist/service-worker.js', '../../CoCreate-app/src/service-worker.js', 'file')
+// symlink('./dist/service-worker.js', '../../app/src/service-worker.js', 'file')
 
 symlink('./demo/offline.html', '../../offline.html', 'file')
-// symlink('./demo/offline.html', '../../CoCreate-app/src/offline.html', 'file')
+// symlink('./demo/offline.html', '../../app/src/offline.html', 'file')
 
 symlink('./demo/manifest.webmanifest', '../../manifest.webmanifest', 'file')
-// symlink('./demo/manifest.webmanifest', '../../CoCreate-app/src/manifest.webmanifest', 'file')
+// symlink('./demo/manifest.webmanifest', '../../app/src/manifest.webmanifest', 'file')
 
 // symlink('./demo/manifest-assets', '../../manifest-assets', 'dir')
-// symlink('./demo/manifest-assets', '../../CoCreate-app/manifest-assets', 'dir')
+// symlink('./demo/manifest-assets', '../../app/manifest-assets', 'dir')

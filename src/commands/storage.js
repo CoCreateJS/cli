@@ -32,7 +32,7 @@ module.exports = async function storage(directory, args) {
 		: Object.entries(config.modules || {}).filter(([, module]) => {
 			if (!module?.path) return false;
 			return path.normalize(module.path).includes(
-				`${path.sep}CoCreate-storages${path.sep}`
+				`${path.sep}storages${path.sep}`
 			);
 		});
 

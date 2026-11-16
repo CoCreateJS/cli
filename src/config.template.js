@@ -18,12 +18,12 @@ module.exports = {
 	template: [
 		// {
 		// 	entry: "./",
-		// 	output: "../CoCreate-app-template",
+		// 	output: "../app-template",
 		// 	exclude: ["./src/admin/", "./src/account/", "./src/apps/", "./src/config/", "./node_modules/", "./.git/"]
 		// },
 		// {
 		// 	entry: "./",
-		// 	output: "../CoCreate-app-template",
+		// 	output: "../app-template",
 		// 	include: ["./src/admin/", "./src/account/", "./src/apps/"]
 		// }
 	],
@@ -56,7 +56,7 @@ module.exports = {
 	// Keep adapters separate from general-purpose modules for workspace organization.
 	storages: {
 		// "storage-name": {
-		// 	path: "../CoCreate-storages/storage-name",
+		// 	path: "../storages/storage-name",
 		// 	repo: "github.com/CoCreateJS/storage-name.git"
 		// }
 	},
@@ -80,7 +80,7 @@ module.exports = {
 	repositories: [
 		{
 			// Relative path to the repository
-			path: "./CoCreate-client",
+			path: "./client",
 			
 			// Git repository URL
 			repo: "github.com/CoCreateJS/CoCreate-client.git",
@@ -94,7 +94,7 @@ module.exports = {
 		}
 		// Add more repositories as needed for polyrepo management
 		// {
-		// 	path: "./CoCreate-modules/cli",
+		// 	path: "./modules/cli",
 		// 	repo: "github.com/CoCreateJS/CoCreate-cli.git",
 		// 	exclude: ["link"] // Don't link this package during "coc install"
 		// }
