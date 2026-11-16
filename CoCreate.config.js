@@ -503,7 +503,7 @@ module.exports = {
         "webpack": {
             "import": "@cocreate/webpack",
             "path": "../../plugins/webpack",
-            "repo": "github.com/CoCreateJS/Webpack.git",
+            "repo": "github.com/CoCreateJS/webpack.git",
             "exclude": [
                 "fs/webpack"
             ]
