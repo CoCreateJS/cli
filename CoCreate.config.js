@@ -30,7 +30,7 @@ module.exports = {
         },
         "server": {
             "path": "../server",
-            "repo": "github.com/CoCreateJS/CoCreate-server.git",
+            "repo": "github.com/CoCreateJS/server.git",
             "exclude": [
                 "fs/webpack"
             ]
