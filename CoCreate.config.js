@@ -252,10 +252,6 @@ module.exports = {
                 "fs/webpack"
             ]
         },
-        "socket-client": {
-            "path": "../socket-client",
-            "repo": "github.com/CoCreateJS/socket-client.git"
-        },
         "socket": {
             "path": "../socket",
             "repo": "github.com/CoCreateJS/socket.git",
