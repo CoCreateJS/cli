@@ -214,12 +214,28 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
         logProgress(
             `[docs] Rendering ${documentationConfig.targets.length} configured target(s) with ${documentationConfig.template}.`
         );
-        const { renderValue } = await import("@cocreate/utils");
+        const [{ renderValue }, { astAsync }] = await Promise.all([
+            import("@cocreate/utils"),
+            import("@cocreate/ast/server")
+        ]);
+        const renderValueWithAST = (
+            node,
+            scope,
+            placeholder,
+            renderAs,
+            renderedNode,
+            index,
+            resolveValue,
+            options = {}
+        ) => renderValue(node, scope, placeholder, renderAs, renderedNode, index, resolveValue, {
+            ...options,
+            astAsync
+        });
         files = await CoCreateDocs.renderDocumentation(data, {
             template: templatePath,
             output: outputPath,
             targets: documentationConfig.targets,
-            renderValue
+            renderValue: renderValueWithAST
         });
     }
 
