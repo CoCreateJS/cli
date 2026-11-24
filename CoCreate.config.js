@@ -321,7 +321,7 @@ module.exports = {
         },
         "workflows": {
             "path": "../workflows",
-            "repo": "github.com/CoCreateJS/workflows.git",
+            "repo": "github.com/CoCreateJS/workflow.git",
             "exclude": [
                 "fs/webpack"
             ]

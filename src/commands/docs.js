@@ -214,9 +214,9 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
         logProgress(
             `[docs] Rendering ${documentationConfig.targets.length} configured target(s) with ${documentationConfig.template}.`
         );
-        const [{ renderValue }, { astAsync }] = await Promise.all([
+        const [{ renderValue }, { evaluateAsync }] = await Promise.all([
             import("@cocreate/utils"),
-            import("@cocreate/ast/server")
+            import("@cocreate/evaluate/server")
         ]);
         const renderValueWithAST = (
             node,
@@ -229,7 +229,7 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
             options = {}
         ) => renderValue(node, scope, placeholder, renderAs, renderedNode, index, resolveValue, {
             ...options,
-            astAsync
+            evaluateAsync
         });
         files = await CoCreateDocs.renderDocumentation(data, {
             template: templatePath,
