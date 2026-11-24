@@ -41,6 +41,10 @@ module.exports = {
             "path": "../actions",
             "repo": "github.com/CoCreateJS/actions.git"
         },
+        "agent": {
+            "path": "../agent",
+            "repo": "github.com/CoCreateJS/agent.git"
+        },
         "api": {
             "path": "../api",
             "repo": "github.com/CoCreateJS/api.git"
@@ -193,6 +197,10 @@ module.exports = {
             "path": "../local-storage",
             "repo": "github.com/CoCreateJS/local-storage.git"
         },
+        "mcp": {
+            "path": "../mcp",
+            "repo": "github.com/CoCreateJS/mcp.git"
+        },
         "notification": {
             "path": "../notification",
             "repo": "github.com/CoCreateJS/notification.git"
@@ -319,8 +327,8 @@ module.exports = {
             "path": "../web-share",
             "repo": "github.com/CoCreateJS/web-share.git"
         },
-        "workflows": {
-            "path": "../workflows",
+        "workflow": {
+            "path": "../workflow",
             "repo": "github.com/CoCreateJS/workflow.git",
             "exclude": [
                 "fs/webpack"

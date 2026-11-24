@@ -216,7 +216,7 @@ module.exports = async function docs(repositories = [], args = [], config = {}) 
         );
         const [{ renderValue }, { evaluateAsync }] = await Promise.all([
             import("@cocreate/utils"),
-            import("@cocreate/evaluate/server")
+            import("@cocreate/evaluate")
         ]);
         const renderValueWithAST = (
             node,
