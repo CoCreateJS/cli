@@ -193,10 +193,6 @@ module.exports = {
             "path": "../loadtest",
             "repo": "github.com/CoCreateJS/loadtest.git"
         },
-        "local-storage": {
-            "path": "../local-storage",
-            "repo": "github.com/CoCreateJS/local-storage.git"
-        },
         "mcp": {
             "path": "../mcp",
             "repo": "github.com/CoCreateJS/mcp.git"

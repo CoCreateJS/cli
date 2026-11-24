@@ -61,6 +61,7 @@ function getTargetNodeModulesPath(targetDir, packageManager) {
  */
 function buildWorkspaceMap(repos, cwd) {
     const map = new Map();
+    const siblingDirectories = new Set();
 
     for (const repo of repos) {
         if (!repo) continue;
@@ -93,6 +94,42 @@ function buildWorkspaceMap(repos, cwd) {
         };
 
         map.set(packageName, repoMeta);
+        siblingDirectories.add(path.dirname(absolutePath));
+    }
+
+    // A project config may list the packages it consumes without listing
+    // every package those packages consume. Discover local CoCreate packages
+    // beside configured repositories so transitive local dependencies can be
+    // linked into their consumers during development.
+    for (const directory of siblingDirectories) {
+        let entries;
+        try {
+            entries = fs.readdirSync(directory, { withFileTypes: true });
+        } catch (e) {
+            continue;
+        }
+
+        for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+
+            const absolutePath = path.join(directory, entry.name);
+            const packageJsonPath = path.join(absolutePath, "package.json");
+            if (!fs.existsSync(packageJsonPath)) continue;
+
+            try {
+                const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+                if (!pkg.name || !pkg.name.startsWith("@cocreate/") || map.has(pkg.name)) continue;
+
+                map.set(pkg.name, {
+                    packageName: pkg.name,
+                    absolutePath,
+                    directory,
+                    name: path.basename(absolutePath)
+                });
+            } catch (e) {
+                // Ignore packages with unreadable or invalid manifests.
+            }
+        }
     }
 
     return map;
@@ -231,7 +268,6 @@ async function linkRepoAndDependencies(repo, workspaceMap, options, visited = ne
                 ...options,
                 depth: depth + 1
             }, visited);
-
         } catch (err) {
             failed.push({
                 name: `${repo.packageName} -> ${depRepo.packageName}`,
